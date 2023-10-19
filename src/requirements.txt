@@ -25,6 +25,7 @@ filelock==3.9.0
 fonttools==4.43.1
 fqdn==1.5.1
 fsspec==2023.4.0
+h5py==3.10.0
 idna==3.4
 ipykernel==6.25.2
 ipython==8.16.1
