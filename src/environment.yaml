@@ -18,6 +18,7 @@ dependencies:
   - xz=5.4.2=h8cc25b3_0
   - zlib=1.2.13=h8cc25b3_0
   - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu121
       - anyio==4.0.0
       - argon2-cffi==23.1.0
       - argon2-cffi-bindings==21.2.0
