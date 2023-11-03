@@ -31,7 +31,7 @@ def to_torch(x):
 def to_numpy(x):
     return x.detach().cpu().numpy()
 
-def load_h5(filename="data/Dataset.h5"):
+def load_h5_dataset(filename="data/Dataset.h5"):
     h5 = h5py.File(filename,'r')
 
     GT_data = h5['groundtruth']
@@ -41,6 +41,7 @@ def load_h5(filename="data/Dataset.h5"):
 
 def h5_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
     image_dir = os.path.join(path, 'Dataset.h5')
+    
 
     transform = None
     if use_transform:
@@ -193,8 +194,7 @@ def plot_subimages(array):
         fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
         plt.tight_layout(pad=1)
 
-def read_h5(filename):
-
+def read_h5(filename, split=True):
     with h5py.File(filename, "r") as f:
         # Print all root level object names (aka keys) 
         # these can be group or dataset names 
@@ -203,15 +203,13 @@ def read_h5(filename):
         for i, a_group_key in enumerate(key_list):
             if a_group_key=='coordinate':
                 coords = list(f[a_group_key])
+                n = len(coords)
             elif a_group_key=='info':
                 info = list(f[a_group_key])
             elif a_group_key=='groundtruth':
-                gt = to_torch
+                gt = to_torch(np.array(f[a_group_key],dtype='uint8'))
             else:
-                mono = to_torch
-            break
-        ds_arr = f[a_group_key][()]  # returns as a numpy array
-        
+                mono = to_torch(np.array(f[a_group_key], dtype='uint8'))
+    if split:
+        p = np.random.permutation(n)
     return gt, mono, coords, info
-
-#class h5Dataset(Dataset):
