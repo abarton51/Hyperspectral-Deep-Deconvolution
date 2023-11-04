@@ -23,7 +23,7 @@ from functools import partial
 from itertools import repeat
 from multiprocessing import Pool
 from pathlib import Path
-from utils.GetLowestGPU import GetLowestGPU
+from Utils.GetLowestGPU import GetLowestGPU
 
 device = torch.device(GetLowestGPU(pick_from=[0,1,2,3]))
 def to_torch(x):
@@ -40,9 +40,8 @@ def load_h5_dataset(filename="data/Dataset.h5"):
     info_data = h5['info']
 
 def h5_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
-    image_dir = os.path.join(path, 'Dataset.h5')
-    
-
+    #image_dir = os.path.join(path, 'Dataset.h5')
+    image_dir = path
     transform = None
     if use_transform:
         transform = PairCompose(
@@ -62,8 +61,8 @@ def h5_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
     return dataloader
 
 def train_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
-    image_dir = os.path.join(path, 'train')
-
+    #image_dir = os.path.join(path, 'train')
+    image_dir = path
     transform = None
     if use_transform:
         transform = PairCompose(
@@ -85,9 +84,13 @@ def train_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
 class DeblurDataset(Dataset):
     def __init__(self, h5_filename='Dataset', root_dir='data', transform=None, is_test=False):
         self.image_dir = root_dir
-        self.filepath = os.listdir(os.path.join(root_dir, h5_filename))
+        self.filepath = os.path.join(root_dir, h5_filename)
         self.transform = transform
         self.is_test = is_test
+        self.gt_ds, self.mono_ds, self.coords, self.info = self.read_h5()
+
+    def __len__(self):
+        return self.mono_ds.__len__()
 
     def read_h5(self):
         filename = self.filepath + '.h5'
@@ -99,28 +102,22 @@ class DeblurDataset(Dataset):
                 elif a_group_key=='info':
                     info = list(f[a_group_key])
                 elif a_group_key=='groundtruth':
-                    gt = np.array([])
+                    gt_ds = f[a_group_key]
                 else:
-                    mono = np.array([])
-                break
-            #ds_arr = f[a_group_key][()]  # returns as a numpy array
-            
-        return gt, mono, coords, info
-
-    def __len__(self):
-        return len(self.image_list)
+                    mono_ds = f[a_group_key]
+        return gt_ds, mono_ds, coords, info
 
     def __getitem__(self, idx):
-        image = Image.open(os.path.join(self.image_dir, 'mono', self.image_list[idx]))
-        label = Image.open(os.path.join(self.image_dir, 'groundtruth', self.image_list[idx]))
+        mono_image = self.mono_ds.__getitem__(idx)
+        gt_image = self.gt_ds.__getitem__(idx)
 
         if self.transform:
-            image, label = self.transform(image, label)
+            mono_image, gt_image = self.transform(mono_image, gt_image)
         else:
-            image = F.to_tensor(image)
-            label = F.to_tensor(label)
+            image = F.to_tensor(mono_image)
+            label = F.to_tensor(gt_image)
         if self.is_test:
-            name = self.image_list[idx]
+            name = self.info[idx]
             return image, label, name
         return image, label
 
