@@ -2,7 +2,7 @@ from Utils.Imports import *
 
 from os import listdir
 from os.path import splitext, isfile, join
-from DataAug import PairCompose, PairRandomCrop, PairRandomHorizontalFilp, PairToTensor
+from Utils.DataAug import PairCompose, PairRandomCrop, PairRandomHorizontalFilp, PairToTensor
 from torchvision.transforms import functional as F
 from torch.utils.data import Dataset, DataLoader
 
@@ -34,6 +34,25 @@ def h5_dataloader(path, batch_size=64, num_workers=0, use_transform=False):
     return dataloader
 
 def train_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
+    #image_dir = os.path.join(path, 'train')
+    transform = None
+    if use_transform:
+        transform = PairCompose(
+            [
+                PairRandomHorizontalFilp(), #PairRandomCrop(128)
+                PairToTensor()
+            ]
+        )
+    dataloader = DataLoader(
+        DeblurDataset(path, transform=transform),
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers,
+        pin_memory=True
+    )
+    return dataloader
+
+def valid_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
     #image_dir = os.path.join(path, 'train')
     transform = None
     if use_transform:

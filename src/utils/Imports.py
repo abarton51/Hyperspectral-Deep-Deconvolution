@@ -8,7 +8,6 @@ import h5py
 
 from PIL import Image
 from PIL import ImageShow
-import h5Data
 import spectral as spec
 import tarfile
 import scipy
