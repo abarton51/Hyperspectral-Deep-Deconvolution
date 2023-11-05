@@ -4,9 +4,10 @@ from torchvision.transforms import functional as F
 from Utils.DataLoader import valid_dataloader
 import os
 from skimage.metrics import peak_signal_noise_ratio
+from Utils.GetLowestGPU import GetLowestGPU
 
 def _valid(model, args, ep):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device(GetLowestGPU(pick_from=[0,1,2,3]))
     gopro = valid_dataloader(args.data_dir, batch_size=1, num_workers=0)
     model.eval()
     psnr_adder = Adder()
