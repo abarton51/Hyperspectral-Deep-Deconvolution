@@ -12,29 +12,7 @@ def to_torch(x):
 def to_numpy(x):
     return x.detach().cpu().numpy()
 
-def h5_dataloader(path, batch_size=64, num_workers=0, use_transform=False):
-    #image_dir = os.path.join(path, 'Dataset.h5')
-    image_dir = path
-    transform = None
-    if use_transform:
-        transform = PairCompose(
-            [
-                PairRandomCrop(256),
-                PairRandomHorizontalFilp(),
-                PairToTensor()
-            ]
-        )
-    dataloader = DataLoader(
-        DeblurDataset(image_dir, transform=transform),
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=num_workers,
-        pin_memory=True
-    )
-    return dataloader
-
 def train_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
-    #image_dir = os.path.join(path, 'train')
     transform = None
     if use_transform:
         transform = PairCompose(
@@ -53,12 +31,11 @@ def train_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
     return dataloader
 
 def valid_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
-    #image_dir = os.path.join(path, 'train')
     transform = None
     if use_transform:
         transform = PairCompose(
             [
-                PairRandomHorizontalFilp(), #PairRandomCrop(128)
+                PairRandomHorizontalFilp(),
                 PairToTensor()
             ]
         )
@@ -72,11 +49,10 @@ def valid_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
     return dataloader
 
 class DeblurDataset(Dataset):
-    def __init__(self, h5_filename='Dataset', root_dir='data', blur=True, transform=None, is_test=False):
+    def __init__(self, h5_filename='Dataset', root_dir='data', transform=None):
         self.root_dir = root_dir
         self.filepath = os.path.join(root_dir, h5_filename)
         self.transform = transform
-        self.is_test = is_test
         filename = h5_filename + '.h5'
         self.h5_file = h5py.File(os.path.join(root_dir, filename))
         self.coords = self.h5_file.get('coords')
