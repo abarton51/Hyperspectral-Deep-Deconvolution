@@ -32,7 +32,7 @@ def train_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
 
 def test_dataloader(path, batch_size=1, num_workers=0):
     dataloader = DataLoader(
-        DeblurDataset(path, is_test=True),
+        DeblurDataset(path),
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
