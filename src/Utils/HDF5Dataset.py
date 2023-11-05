@@ -17,13 +17,12 @@ class HDF5Dataset(data.Dataset):
         data_cache_size: Number of HDF5 files that can be cached in the cache (default=3).
         transform: PyTorch transform to apply to every data instance (default=None).
     """
-    def __init__(self, file_name, root_dir, recursive=False, load_data=False, data_cache_size=3, transform=None):
+    def __init__(self, file_name, root_dir, load_data=False, data_cache_size=3, transform=None):
         super().__init__()
         self.data_info = []
         self.data_cache = {}
         self.data_cache_size = data_cache_size
         self.transform = transform
-        
         h5dataset_fp = os.join(root_dir, file_name) + '.h5'
         self._add_data_infos(h5dataset_fp, load_data)
             

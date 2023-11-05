@@ -72,30 +72,20 @@ def valid_dataloader(path, batch_size=64, num_workers=0, use_transform=True):
     return dataloader
 
 class DeblurDataset(Dataset):
-    def __init__(self, h5_filename='Dataset', root_dir='data', transform=None, is_test=False):
+    def __init__(self, h5_filename='Dataset', root_dir='data', blur=True, transform=None, is_test=False):
         self.root_dir = root_dir
         self.filepath = os.path.join(root_dir, h5_filename)
         self.transform = transform
         self.is_test = is_test
-        self.gt_ds, self.mono_ds, self.coords, self.info = read_h5(self.filepath)
+        filename = h5_filename + '.h5'
+        self.h5_file = h5py.File(os.path.join(root_dir, filename))
+        self.coords = self.h5_file.get('coords')
+        self.mono_ds = self.h5_file.get('mono') 
+        self.gt_ds = self.h5_file.get('groundtruth')
+        self.info = self.h5_file.get('info')
 
     def __len__(self):
-        return self.mono_ds.__len__()
-    
-    def _load_h5_dataset(self, file_name, mono=True):
-        """Method for loading .h5 files
-      
-            returns: dict that contains name of the .h5 file as stored in the .h5 file, as well as a generator of the data
-        """
-        path = os.path.join(self.dir_path, file_name)
-        file = h5py.File(path)
-        if mono:
-            key = 'mono'
-        else:
-            key = 'groundtruth'
-        data = file[key]
-        #return dict(file=file, data=data)
-        return data
+        return self.info.shape[0]
 
     def __getitem__(self, idx):
         mono_image = self.mono_ds.__getitem__(idx)
@@ -110,6 +100,9 @@ class DeblurDataset(Dataset):
             name = self.info[idx]
             return image, label, name
         return image, label
+    
+    def __del__(self):
+        self.h5_file.close()
 
     @staticmethod
     def _check_image(lst):
@@ -132,3 +125,20 @@ def read_h5(filepath):
                 else:
                     mono_ds = f[a_group_key]
         return gt_ds, mono_ds, coords, info
+    
+'''
+def _load_h5_dataset(self, file_name, mono=True):
+    """Method for loading .h5 files
+    
+        returns: dict that contains name of the .h5 file as stored in the .h5 file, as well as a generator of the data
+    """
+    path = os.path.join(self.dir_path, file_name)
+    file = h5py.File(path)
+    if mono:
+        key = 'mono'
+    else:
+        key = 'groundtruth'
+    data = file[key]
+    #return dict(file=file, data=data)
+    return data
+'''
