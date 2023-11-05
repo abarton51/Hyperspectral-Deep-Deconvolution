@@ -1,4 +1,4 @@
-from Imports import *
+from Utils.Imports import *
 
 def split_im(array, nrows=128, ncols=128):
     """
