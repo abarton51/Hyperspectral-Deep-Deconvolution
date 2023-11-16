@@ -1,64 +1,42 @@
+import numpy as np
+
 import os
-import torch
-import argparse
-from torch.backends import cudnn
 from model import build_unet
-from train import _train
-from eval import _eval
+from utils import train_loop, test_loop
 
+import torch
+import torch.nn as nn
+from torch.optim import Adam
+from torch.utils.data import DataLoader
 
-def main(args):
-    # CUDNN
-    cudnn.benchmark = True
+import matplotlib.pyplot as plt
 
-    if not os.path.exists('results/'):
-        os.makedirs(args.model_save_dir)
-    if not os.path.exists('results/' + args.model_name + '/'):
-        os.makedirs('results/' + args.model_name + '/')
-    if not os.path.exists(args.model_save_dir):
-        os.makedirs(args.model_save_dir)
-    if not os.path.exists(args.result_dir):
-        os.makedirs(args.result_dir)
+print(torch.cuda.is_available())
 
-    #model = build_unet(args.model_name)
-    model = build_unet()
-    print(model)
-    if torch.cuda.is_available():
-        model.cuda()
-    if args.mode == 'train':
-        _train(model, args)
+train_dataloader = DataLoader() # to be changed later to the actual dataloader
+test_dataloader = DataLoader()
 
-    elif args.mode == 'test':
-        _eval(model, args)
+model = build_unet()
+optimizer = Adam(model.parameters(), lr=0.001)
+loss_fn = nn.MSELoss() # to be changed later if needed
 
+epochs = 10
+epoch_train_loss = []
+epoch_train_acc = []
+for epoch in range (epochs):
+    print("------------------------------------------------")
+    print(f"Epoch {epoch+1}:")
+    train_loss_history, train_acc_history = train_loop(train_dataloader, model, loss_fn, optimizer)
+    epoch_train_loss.append(train_loss_history[-1]) # could use some form of aggregation rather than just take the last value
+    epoch_train_acc.append(train_acc_history[-1])
+    test_loop(test_dataloader, model, loss_fn)
+print("Done!")
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-
-    # Directories
-    parser.add_argument('--model_name', default='UNet1', choices=['UNet1', 'UNet2'], type=str)
-    parser.add_argument('--data_dir', type=str, default='data')
-    parser.add_argument('--mode', default='test', choices=['train', 'test'], type=str)
-
-    # Train
-    parser.add_argument('--batch_size', type=int, default=4)
-    parser.add_argument('--learning_rate', type=float, default=1e-4)
-    parser.add_argument('--weight_decay', type=float, default=0)
-    parser.add_argument('--num_epoch', type=int, default=3000)
-    parser.add_argument('--print_freq', type=int, default=100)
-    parser.add_argument('--num_worker', type=int, default=8)
-    parser.add_argument('--save_freq', type=int, default=100)
-    parser.add_argument('--valid_freq', type=int, default=100)
-    parser.add_argument('--resume', type=str, default='')
-    parser.add_argument('--gamma', type=float, default=0.5)
-    parser.add_argument('--lr_steps', type=list, default=[(x+1) * 500 for x in range(3000//500)])
-
-    # Test
-    parser.add_argument('--test_model', type=str, default='weights/UNet.pkl')
-    parser.add_argument('--save_image', type=bool, default=False, choices=[True, False])
-
-    args = parser.parse_args()
-    args.model_save_dir = os.path.join('results/', args.model_name, 'weights/')
-    args.result_dir = os.path.join('results/', args.model_name, 'result_image/')
-    print(args)
-    main(args)
+# Plot the loss and accuracy from training history
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
+ax1.plot(epoch_train_loss)
+ax1.set_title("Loss")
+ax2.plot(epoch_train_acc)
+ax2.set_title("Accuracy")
+if (not os.path.exists('../reports')): os.mkdir('../reports')
+plt.savefig('reports/train.png')

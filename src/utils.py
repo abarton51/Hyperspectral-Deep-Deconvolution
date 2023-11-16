@@ -1,43 +1,40 @@
-import time
-import numpy as np
+import torch
+from torch.utils.data import DataLoader
+import torch.nn as nn
+from torch.optim import Optimizer
 
+def train_loop(dataloader: DataLoader, model: nn.Module, loss_fn: nn.Module, optimizer: Optimizer):
+    model.train()
+    train_loss_history = []
+    train_acc_history = []
+    for batch, (input, label) in enumerate(dataloader):
+        pred = model(input)
+        loss = loss_fn(pred, label)
 
-class Adder(object):
-    def __init__(self):
-        self.count = 0
-        self.num = float(0)
+        # record history
+        train_loss_history.append(loss)
+        train_acc_history.append(torch.isclose(pred, label, rtol=0).type(torch.float).mean())
 
-    def reset(self):
-        self.count = 0
-        self.num = float(0)
+        loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
 
-    def __call__(self, num):
-        self.count += 1
-        self.num += num
+        if batch % 100 == 0:
+            print(f"batch {batch+1} loss: {loss:>7f}")
+    
+    return train_loss_history, train_acc_history
 
-    def average(self):
-        return self.num / self.count
-
-
-class Timer(object):
-    def __init__(self, option='s'):
-        self.tm = 0
-        self.option = option
-        if option == 's':
-            self.divider = 1
-        elif option == 'm':
-            self.divider = 60
-        else:
-            self.divider = 3600
-
-    def tic(self):
-        self.tm = time.time()
-
-    def toc(self):
-        return (time.time() - self.tm) / self.divider
-
-
-def check_lr(optimizer):
-    for i, param_group in enumerate(optimizer.param_groups):
-        lr = param_group['lr']
-    return lr
+def test_loop(dataloader: DataLoader, model: nn.Module, loss_fn: nn.Module):
+    model.eval()
+    size = len(dataloader.dataset)
+    num_batches = len(dataloader)
+    test_loss, correct = 0, 0
+    with torch.no_grad(): # to make sure no gradient is calculated
+        for input, label in dataloader:
+            # this code was mostly copied from the pytorch tutorial. I don't know why they didn't use enumerate or if num_batches is different from size.
+            pred = model(input)
+            test_loss += loss_fn(pred, label).item()
+            correct += (pred.argmax(1) == label).type(torch.float).sum().item()
+        test_loss /= num_batches
+        correct /= size
+        print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
