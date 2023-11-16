@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+# h5 Data
+*.h5
+
+# TIFF Data
+*.tiff
+
+# notebooks
+*.ipynb
+
 # Distribution / packaging
 .Python
 build/
