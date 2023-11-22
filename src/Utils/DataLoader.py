@@ -80,12 +80,10 @@ class DeblurDataset(Dataset):
         if self.transform:
             mono_image, gt_image = self.transform(mono_image, gt_image)
         else:
-            image = F.to_tensor(mono_image)
-            label = F.to_tensor(gt_image)
-        if self.is_test:
-            name = self.info[idx]
-            return image, label, name
-        return image, label
+            mono_image = F.to_tensor(mono_image)
+            gt_image = F.to_tensor(gt_image)
+
+        return mono_image, gt_image
     
     def __del__(self):
         self.h5_file.close()
@@ -112,19 +110,3 @@ def read_h5(filepath):
                     mono_ds = f[a_group_key]
         return gt_ds, mono_ds, coords, info
     
-'''
-def _load_h5_dataset(self, file_name, mono=True):
-    """Method for loading .h5 files
-    
-        returns: dict that contains name of the .h5 file as stored in the .h5 file, as well as a generator of the data
-    """
-    path = os.path.join(self.dir_path, file_name)
-    file = h5py.File(path)
-    if mono:
-        key = 'mono'
-    else:
-        key = 'groundtruth'
-    data = file[key]
-    #return dict(file=file, data=data)
-    return data
-'''
