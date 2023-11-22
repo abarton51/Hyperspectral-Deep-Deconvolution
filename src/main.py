@@ -1,7 +1,5 @@
-import numpy as np
-
 import os
-from model import build_unet
+from models.model import build_unet
 from utils import train_loop, test_loop
 
 import torch
@@ -16,7 +14,7 @@ print(torch.cuda.is_available())
 train_dataloader = DataLoader() # to be changed later to the actual dataloader
 test_dataloader = DataLoader()
 
-model = build_unet()
+model = classic_unet()
 optimizer = Adam(model.parameters(), lr=0.001)
 loss_fn = nn.MSELoss() # to be changed later if needed
 

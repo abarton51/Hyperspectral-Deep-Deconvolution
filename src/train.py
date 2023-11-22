@@ -8,7 +8,6 @@ from valid import _valid
 import torch.nn.functional as F
 from Utils.GetLowestGPU import GetLowestGPU
 
-
 def _train(model, args):
     device = torch.device(GetLowestGPU(pick_from=[0,1,2,3]))
     criterion = torch.nn.L1Loss()
