@@ -11,12 +11,13 @@ class ConvBlock(nn.Module):
         bn1 = nn.BatchNorm2d(out_c)
         conv2 = nn.Conv2d(out_c, out_c, kernel_size=3, padding=1)
         bn2 = nn.BatchNorm2d(out_c)
-        relu = nn.ReLU()
-        self.modules = nn.ModuleList([conv1, bn1, relu, conv2, bn2, relu])
+        relu1 = nn.ReLU()
+        relu2 = nn.ReLU()
+        self.modules = nn.ModuleList([conv1, bn1, relu1, conv2, bn2, relu2])
 
     def forward(self, inputs):
         x = torch.clone(inputs)
-        for _, m in enumerate(self.modules):
+        for _, m in enumerate(self.modules()):
             x = m(x)
         return x
 
@@ -45,7 +46,6 @@ class DecoderBlock(nn.Module):
         x = self.conv(x)
         return x
 
-
 class ClassicUnet(nn.Module):
     def __init__(self):
         super().__init__()
@@ -64,9 +64,6 @@ class ClassicUnet(nn.Module):
         self.d3 = DecoderBlock(256, 128)
         self.d4 = DecoderBlock(128, 64)
 
-        # Classifer
-        self.outputs = nn.Conv2d(64, 1, kernel_size=1, padding=0)
-
     def forward(self, inputs):
         s1, x = self.e1(inputs)
         s2, x = self.e2(x)
@@ -80,5 +77,16 @@ class ClassicUnet(nn.Module):
         x = self.d3(x, s2)
         x = self.d4(x, s1)
 
-        outputs = self.outputs(x)
-        return outputs
+        return x
+
+
+#to test some issues with infinite recursion and device compatibility
+class DummyNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        #Random dummy network
+        self.conv1 = nn.Conv2d(1, 29, kernel_size=1, padding=0)
+
+    def forward(self, inputs):
+        x = self.conv1(inputs)
+        return x

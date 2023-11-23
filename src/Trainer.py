@@ -1,6 +1,4 @@
 import math
-
-import os
 import torch
 from torch.utils.data import DataLoader
 import torch.nn as nn
@@ -12,10 +10,14 @@ class Trainer:
                  optimizer: Optimizer, saveDirectory, config=None):
         self.trainLoader = dataLoader
         self.valLoader = valData
-        self.model = model
+
         self.criterion = loss_fn
         self.optimizer = optimizer
         self.saveDirectory = saveDirectory
+
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = model.to(self.device)
+        self.model = model.to(self.device)
 
         self.train_loss_history = []
         self.val_loss_history = []
@@ -23,15 +25,16 @@ class Trainer:
 
         # if the user did not present a config, initialize default config
         if config is None:
-            config["epochs"] = 100
-            config["verbose"] = True
+            config = dict()
+            config["epochs"] = 1000
+            config["verbose"] = False
             config["doplot"] = True
-            config["saveincrement"] = 25
+            config["saveincrement"] = 100
 
         self.epochs = config["epochs"]  # total number epochs
         self.verbose = config["verbose"]  # Verbose training status updates?
         self.doplot = config["doplot"]  # output epoch plots?
-        self.saveincrement = config["saveincrement"]  # save model weights every 25 epochs
+        self.saveincrement = config["saveincrement"]  # save model saved_models every 25 epochs
 
     # initialize a new trainer by loading in the parameters from a model weight file
     # @classmethod
@@ -40,9 +43,14 @@ class Trainer:
     # Single Epoch training loop
     def train_epoch(self):
         self.model.train()
-        avgloss = 0;
+        avgloss = 0
         for batch, (inputs, gt) in enumerate(self.trainLoader):
             self.optimizer.zero_grad()
+
+            #Put data on target device
+            inputs = inputs.to(self.device)
+            gt = gt.to(self.device)
+
             pred = self.model(inputs)
             loss = self.criterion(pred, gt)
 
@@ -97,6 +105,9 @@ class Trainer:
         # no grad for validation
         with torch.no_grad():
             for i, (inputs, gt) in enumerate(self.valLoader):
+                inputs = inputs.to(self.device)
+                gt = gt.to(self.device)
+
                 pred = self.model(inputs)
                 loss = self.criterion(pred, gt)
 
@@ -114,18 +125,6 @@ class Trainer:
 
     # Load a model parameters into the trainer model
     def load_model(self, filedir):
-        self.model.load_state_dict(torch.load(filedir))
+        self.model.load_state_dict(torch.load(filedir, map_location=self.device))
+        self.model = self.model.to(self.device)
         self.model.eval()
-
-
-def evaluate(dataloader: DataLoader, model: nn.Module, loss_fn: nn.Module):
-    model.eval()
-    num_batches = len(dataloader)
-    test_loss = 0
-    with torch.no_grad():  # to make sure no gradient is calculated
-        for input, label in dataloader:
-            pred = model(input)
-            test_loss += loss_fn(pred, label).item()
-
-        test_loss /= num_batches
-        print(f"Avg loss: {test_loss:>8f} \n")
