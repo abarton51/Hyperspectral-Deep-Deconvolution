@@ -7,12 +7,13 @@ from torch.optim import Optimizer
 
 class Trainer:
     def __init__(self, dataLoader: DataLoader, valData: DataLoader, model: nn.Module, loss_fn: nn.Module,
-                 optimizer: Optimizer, saveDirectory, config=None):
+                 optimizer: Optimizer, saveDirectory, scheduler=None, config=None):
         self.trainLoader = dataLoader
         self.valLoader = valData
 
         self.criterion = loss_fn
         self.optimizer = optimizer
+        self.scheduler = scheduler
         self.saveDirectory = saveDirectory
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -21,7 +22,6 @@ class Trainer:
 
         self.train_loss_history = []
         self.val_loss_history = []
-        self.bestepoch = 0  # epoch of the currently best model
 
         # if the user did not present a config, initialize default config
         if config is None:
@@ -47,7 +47,7 @@ class Trainer:
         for batch, (inputs, gt) in enumerate(self.trainLoader):
             self.optimizer.zero_grad()
 
-            #Put data on target device
+            # Put data on target device
             inputs = inputs.to(self.device)
             gt = gt.to(self.device)
 
@@ -76,6 +76,7 @@ class Trainer:
         if epochs is None:
             epochs = self.epochs
 
+        bestepoch = 0
         bestloss = math.inf
         for epoch in range(epochs):
             print("------------------------------------------------")
@@ -86,16 +87,24 @@ class Trainer:
             vloss = self.validate()
             print(f"Validation Loss {vloss}:")
 
+            if self.scheduler is not None:
+                self.scheduler.step()
+
             # Save the best model
             if vloss < bestloss:
-                self.bestepoch = epoch
+                bestepoch = epoch
+                bestloss = vloss
                 self.save_model('bestmodel.pth')
 
             # Save model every "saveincrement" epochs
-            if (epoch+1) % self.saveincrement == 0:
-                self.save_model('epoch' + str(epoch) + '.pth')
+            if (epoch + 1) % self.saveincrement == 0:
+                self.save_model('epoch' + str(epoch + 1) + '.pth')
 
+        print("------------------------------------------------")
         print("Training Done!")
+        self.load_model(self.saveDirectory + '/' + 'bestmodel.pth')
+        return self.model,bestepoch,bestloss
+
 
     # Validation against validation dataset
     def validate(self):
