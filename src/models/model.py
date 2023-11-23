@@ -7,19 +7,16 @@ import torch.nn as nn
 class ConvBlock(nn.Module):
     def __init__(self, in_c, out_c):
         super().__init__()
-        conv1 = nn.Conv2d(in_c, out_c, kernel_size=3, padding=1)
-        bn1 = nn.BatchNorm2d(out_c)
-        conv2 = nn.Conv2d(out_c, out_c, kernel_size=3, padding=1)
-        bn2 = nn.BatchNorm2d(out_c)
-        relu1 = nn.ReLU()
-        relu2 = nn.ReLU()
-        self.modules = nn.ModuleList([conv1, bn1, relu1, conv2, bn2, relu2])
-
+        self.model = nn.Sequential(
+            nn.Conv2d(in_c, out_c, kernel_size=3, padding=1),
+            nn.BatchNorm2d(out_c),
+            nn.ReLU(),
+            nn.Conv2d(out_c, out_c, kernel_size=3, padding=1),
+            nn.BatchNorm2d(out_c),
+            nn.ReLU()
+        )
     def forward(self, inputs):
-        x = torch.clone(inputs)
-        for _, m in enumerate(self.modules()):
-            x = m(x)
-        return x
+        return self.model(inputs)
 
 
 class EncoderBlock(nn.Module):
@@ -50,8 +47,8 @@ class ClassicUnet(nn.Module):
     def __init__(self):
         super().__init__()
         # Encoder
-        self.e1 = EncoderBlock(3, 64)
-        self.e2 = EncoderBlock(64, 128)
+        self.e1 = EncoderBlock(1, 29)
+        self.e2 = EncoderBlock(29, 128)
         self.e3 = EncoderBlock(128, 256)
         self.e4 = EncoderBlock(256, 512)
 
@@ -62,7 +59,7 @@ class ClassicUnet(nn.Module):
         self.d1 = DecoderBlock(1024, 512)
         self.d2 = DecoderBlock(512, 256)
         self.d3 = DecoderBlock(256, 128)
-        self.d4 = DecoderBlock(128, 64)
+        self.d4 = DecoderBlock(128, 29)
 
     def forward(self, inputs):
         s1, x = self.e1(inputs)
