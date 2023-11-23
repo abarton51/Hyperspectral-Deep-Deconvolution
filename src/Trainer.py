@@ -3,7 +3,8 @@ import torch
 from torch.utils.data import DataLoader
 import torch.nn as nn
 from torch.optim import Optimizer
-
+from tqdm import tqdm
+import numpy as np
 
 class Trainer:
     def __init__(self, dataLoader: DataLoader, valData: DataLoader, model: nn.Module, loss_fn: nn.Module,
@@ -20,21 +21,19 @@ class Trainer:
         model = model.to(self.device)
         self.model = model.to(self.device)
 
-        self.train_loss_history = []
-        self.val_loss_history = []
+        self.train_loss_history = np.array([],dtype=np.float32)
+        self.val_loss_history = np.array([],dtype=np.float32)
 
-        # if the user did not present a config, initialize default config
+        # if the user did not present a co initialize default config
         if config is None:
             config = dict()
             config["epochs"] = 1000
-            config["verbose"] = False
             config["doplot"] = True
             config["saveincrement"] = 100
 
         self.epochs = config["epochs"]  # total number epochs
-        self.verbose = config["verbose"]  # Verbose training status updates?
         self.doplot = config["doplot"]  # output epoch plots?
-        self.saveincrement = config["saveincrement"]  # save model saved_models every 25 epochs
+        self.saveincrement = config["saveincrement"]  # save model weights every few epochs
 
     # initialize a new trainer by loading in the parameters from a model weight file
     # @classmethod
@@ -43,32 +42,31 @@ class Trainer:
     # Single Epoch training loop
     def train_epoch(self):
         self.model.train()
-        avgloss = 0
-        for batch, (inputs, gt) in enumerate(self.trainLoader):
-            self.optimizer.zero_grad()
+        avgloss = torch.Tensor([0])
+        with tqdm(self.trainLoader, position = 0, desc = 'Batch') as tqdm_data_loader:
+            for batch, (inputs, gt) in enumerate(tqdm_data_loader):
+                self.optimizer.zero_grad()
 
-            # Put data on target device
-            inputs = inputs.to(self.device)
-            gt = gt.to(self.device)
+                # Put data on target device
+                inputs = inputs.to(self.device)
+                gt = gt.to(self.device)
 
-            pred = self.model(inputs)
-            loss = self.criterion(pred, gt)
+                #get loss & backprop
+                pred = self.model(inputs)
+                loss = self.criterion(pred, gt)
+                loss.backward()
 
-            loss.backward()
-            self.optimizer.step()
+                #step gradients
+                self.optimizer.step()
 
-            # update avg loss of this epoch
-            avgloss += loss
-
-            # Verbose progress monitor
-            if self.verbose:
-                if batch % 100 == 0:
-                    print(f"batch {batch + 1} loss: {loss:>7f}")
+                # update avg loss of this epoch
+                avgloss += loss.detach().to('cpu')
 
         # record loss history
         avgloss = avgloss / (batch + 1)
-        self.train_loss_history.append(avgloss)
-        return avgloss
+        avgloss = np.array(avgloss)
+        self.train_loss_history = np.append(self.train_loss_history,avgloss)
+        return avgloss[0]
 
     # Training the model over multiple epochs
     def train(self, epochs=None):
@@ -76,32 +74,42 @@ class Trainer:
         if epochs is None:
             epochs = self.epochs
 
+        #track which epoch had the lowest validation loss
         bestepoch = 0
         bestloss = math.inf
-        for epoch in range(epochs):
-            print("------------------------------------------------")
-            print(f"Epoch {epoch + 1}:")
-            trainloss = self.train_epoch()
-            print(f"Training Loss {trainloss}:")
 
-            vloss = self.validate()
-            print(f"Validation Loss {vloss}:")
+        print("------------------------------------------------")
+        print("Training Start")
+        print("------------------------------------------------")
 
-            if self.scheduler is not None:
-                self.scheduler.step()
+        with tqdm(range(epochs), position=1, initial=1, desc='Training Progress') as tqdm_epochs:
+            for epoch in tqdm_epochs:
 
-            # Save the best model
-            if vloss < bestloss:
-                bestepoch = epoch
-                bestloss = vloss
-                self.save_model('bestmodel.pth')
+                # Train one epoch and validate
+                trainloss = self.train_epoch()
+                vloss = self.validate()
 
-            # Save model every "saveincrement" epochs
-            if (epoch + 1) % self.saveincrement == 0:
-                self.save_model('epoch' + str(epoch + 1) + '.pth')
+                # If we do want learning rate decay, step it now
+                if self.scheduler is not None:
+                    self.scheduler.step()
+
+                # Save the best model
+                if vloss < bestloss:
+                    bestepoch = epoch
+                    bestloss = vloss
+                    self.save_model('bestmodel.pth')
+
+                # Save model every "saveincrement" epochs
+                if (epoch + 1) % self.saveincrement == 0:
+                    self.save_model('epoch' + str(epoch + 1) + '.pth')
+
+                tqdm_epochs.set_postfix({"Epoch": epoch, "Train Loss": trainloss, "Val Loss": vloss})
 
         print("------------------------------------------------")
         print("Training Done!")
+        print("------------------------------------------------")
+
+        # Return the most successful model
         self.load_model(self.saveDirectory + '/' + 'bestmodel.pth')
         return self.model,bestepoch,bestloss
 
@@ -109,23 +117,27 @@ class Trainer:
     # Validation against validation dataset
     def validate(self):
         self.model.eval()
-        avgloss = 0
+        avgloss = torch.Tensor([0])
 
         # no grad for validation
         with torch.no_grad():
             for i, (inputs, gt) in enumerate(self.valLoader):
+
+                # data to target device
                 inputs = inputs.to(self.device)
                 gt = gt.to(self.device)
 
+                # validation loss
                 pred = self.model(inputs)
                 loss = self.criterion(pred, gt)
 
                 # update avg validation loss
-                avgloss += loss
+                avgloss += loss.detach().to('cpu')
 
             avgloss = avgloss / (i + 1)
-            self.val_loss_history.append(avgloss)
-            return avgloss
+            avgloss = np.array(avgloss)
+            self.val_loss_history = np.append(self.val_loss_history, avgloss)
+            return avgloss[0]
 
     # Save the current model parameters
     def save_model(self, fname):
@@ -137,3 +149,9 @@ class Trainer:
         self.model.load_state_dict(torch.load(filedir, map_location=self.device))
         self.model = self.model.to(self.device)
         self.model.eval()
+
+    def get_train_loss_history(self):
+        return self.train_loss_history
+
+    def get_val_loss_history(self):
+        return self.val_loss_history
