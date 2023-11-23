@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
+import torch.nn as nn
 
 def count_params(model):
     """Count the number of parameters in the model. """
@@ -23,3 +24,8 @@ def green_cm():
     cm = LinearSegmentedColormap.from_list(
         "Green", colors, N=256)
     return cm
+
+def PSNR(pred, gt):
+    loss = nn.MSELoss()
+    psnr = 10*np.log10(1/(np.array(loss(gt,pred).to('cpu'))))
+    return psnr

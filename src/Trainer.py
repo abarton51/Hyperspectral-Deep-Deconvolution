@@ -30,7 +30,7 @@ class Trainer:
             config = dict()
             config["epochs"] = 1000
             config["doplot"] = True
-            config["saveincrement"] = 100
+            config["saveincrement"] = 2
 
         self.epochs = config["epochs"]  # total number epochs
         self.doplot = config["doplot"]  # output epoch plots?
@@ -45,7 +45,7 @@ class Trainer:
         self.model.train()
         avgloss = torch.Tensor([0])
         with tqdm(self.trainLoader, position = 0, desc = 'Batch') as tqdm_data_loader:
-            for batch, (inputs, gt) in enumerate(tqdm_data_loader):
+            for batch, (inputs, gt, _) in enumerate(tqdm_data_loader):
                 self.optimizer.zero_grad()
 
                 # Put data on target device
@@ -105,7 +105,7 @@ class Trainer:
                 if (epoch + 1) % self.saveincrement == 0:
                     self.save_model('epoch' + str(epoch + 1) + '.pth')
                     if self.evaluator is not None:
-                        self.evaluator.evaluate()
+                        self.evaluator.test_model(str(epoch + 1))
 
                 tqdm_epochs.set_postfix({"Epoch": epoch, "Train Loss": trainloss, "Val Loss": vloss})
 
@@ -126,7 +126,7 @@ class Trainer:
 
         # no grad for validation
         with torch.no_grad():
-            for i, (inputs, gt) in enumerate(self.valLoader):
+            for i, (inputs, gt, _) in enumerate(self.valLoader):
 
                 # data to target device
                 inputs = inputs.to(self.device)

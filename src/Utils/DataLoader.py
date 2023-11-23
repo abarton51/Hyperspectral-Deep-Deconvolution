@@ -60,6 +60,7 @@ class DeblurDataset(Dataset):
         self.info = self.h5_file.get('info')
         self.mono_ds = self.h5_file.get('mono')
         self.gt_ds = self.h5_file.get('groundtruth')
+        self.blur_ds = self.h5_file.get('blurred')
         self.memload = memload
 
         #Load entire dataset into RAM to accelerate loading problems
@@ -69,6 +70,7 @@ class DeblurDataset(Dataset):
                 #In case we ever have multi-channel mono...
                 self.mono_ds = self.mono_ds[:,None,:,:]
             self.gt_ds = torch.Tensor(self.gt_ds[:])
+            self.blur_ds = torch.Tensor(self.gt_ds[:])
 
     def __len__(self):
         return self.info.shape[0]
@@ -77,12 +79,13 @@ class DeblurDataset(Dataset):
 
         mono_image = self.mono_ds[idx]
         gt_image = self.gt_ds[idx]
+        blur_image = self.blur_ds[idx]
 
         if self.transform:
-            mono_image, gt_image = self.transform(mono_image, gt_image)
+            mono_image, gt_image, blur_image = self.transform(mono_image, gt_image, blur_image)
         else:
             if self.memload:
-                return mono_image, gt_image
+                return mono_image, gt_image, blur_image
             else:
                 mono_image = torch.Tensor(mono_image)
                 # In case that we are reading a single-channel image (which we are), add singleton dim
@@ -90,8 +93,9 @@ class DeblurDataset(Dataset):
                 if len(mono_image.shape) != 3:
                     mono_image = mono_image[None,:,:]
                 gt_image = torch.Tensor(gt_image)
+                blur_image = torch.Tensor(blur_image)
 
-        return mono_image, gt_image
+        return mono_image, gt_image, blur_image
 
     def __del__(self):
         self.h5_file.close()

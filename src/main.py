@@ -27,8 +27,8 @@ np.random.seed(0)
 
 # Set save and data directories
 datapath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General'
-#savepath = 'I:\CS_4644_Project\src\saved_models\DummyNet'
-savepath = 'I:\CS_4644_Project\src\saved_models\ClassicUnet'
+#savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\DummyNet'
+savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ClassicUnet'
 config_file = ''
 print(savepath)
 
@@ -48,8 +48,8 @@ numparams = count_params(model)
 print(f"Number of parameters: {numparams}")
 
 optimizer = Adam(model.parameters(), lr=0.01)
-#scheduler = lrScheduler.MultiStepLR(optimizer,milestones=[100,200,300], gamma=0.1)
-scheduler = lrScheduler.StepLR(optimizer, step_size=5, gamma=0.2)
+scheduler = lrScheduler.MultiStepLR(optimizer,milestones=[100,200,300,1000], gamma=0.1)
+#scheduler = lrScheduler.StepLR(optimizer, step_size=5, gamma=0.2)
 
 loss_fn = nn.MSELoss()  # to be changed later if needed
 
@@ -58,8 +58,9 @@ evaluator = Evaluator(trainer, testLoader) # Initialize Evaluator
 trainer.set_evaluator(evaluator) # Set the evaluator inside the trainer
 
 if evaluationMode:
-    trainer.load_model(savepath + '/epoch100.pth')
-    evaluator.test_model()
+    trainer.load_model(savepath + '/bestmodel.pth')
+    loss, psnr = evaluator.test_model('test')
+    print(psnr)
 
 if trainingMode:
     starttime = time.time()
