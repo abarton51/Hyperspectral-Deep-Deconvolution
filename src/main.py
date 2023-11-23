@@ -3,9 +3,10 @@ import time
 import torch
 import torch.nn as nn
 from torch.optim import Adam
-from torch.optim.lr_scheduler import StepLR
+import torch.optim.lr_scheduler as lrScheduler
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 import models.model as models
 from Evaluator import Evaluator
@@ -14,40 +15,66 @@ import Utils.DataLoader as dataset
 from Utils.utils import count_params
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Set deterministic behavior
+torch.backends.cudnn.deterministic = True
+torch.use_deterministic_algorithms(True)
+random.seed(0)
+torch.manual_seed(0)
+torch.cuda.manual_seed(0)
+np.random.seed(0)
+
+
+# Set save and data directories
 datapath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General'
-savepath = 'I:\CS_4644_Project\src\saved_models\DummyNet'
-#savepath = 'I:\CS_4644_Project\src\saved_models\ClassicUnet'
+#savepath = 'I:\CS_4644_Project\src\saved_models\DummyNet'
+savepath = 'I:\CS_4644_Project\src\saved_models\ClassicUnet'
+config_file = ''
 print(savepath)
+
+
+# Perform training?
+trainingMode = False
+
+# Perform evaluation on pretrained model?
+evaluationMode = True
 
 trainLoader, valLoader, testLoader = dataset.getDeblurDataLoader('Dataset', datapath, batch_size=64,
                                                                  split=(0.8, 0.1, 0.1), memload=True)
 
-#model = models.ClassicUnet()
-model = models.DummyNet()
+model = models.ClassicUnet()
+#model = models.DummyNet()
 numparams = count_params(model)
 print(f"Number of parameters: {numparams}")
 
 optimizer = Adam(model.parameters(), lr=0.01)
-#scheduler = StepLR(optimizer, step_size=100, gamma=0.5)
-scheduler = StepLR(optimizer, step_size=5, gamma=0.2)
+#scheduler = lrScheduler.MultiStepLR(optimizer,milestones=[100,200,300], gamma=0.1)
+scheduler = lrScheduler.StepLR(optimizer, step_size=5, gamma=0.2)
 
 loss_fn = nn.MSELoss()  # to be changed later if needed
 
+trainer = Trainer(trainLoader, valLoader, model, loss_fn, optimizer, savepath, scheduler=None) # Initialize trainer
+evaluator = Evaluator(trainer, testLoader) # Initialize Evaluator
+trainer.set_evaluator(evaluator) # Set the evaluator inside the trainer
 
-trainer = Trainer(trainLoader, valLoader, model, loss_fn, optimizer, savepath, scheduler=None)
+if evaluationMode:
+    trainer.load_model(savepath + '/epoch100.pth')
+    evaluator.test_model()
 
-starttime = time.time()
-bestmodel,bestepoch,bestloss = trainer.train(10)
-endtime = time.time()
+if trainingMode:
+    starttime = time.time()
+    bestmodel,bestepoch,bestloss = trainer.train(10)
+    endtime = time.time()
 
-np.savetxt(savepath + '/' + 'trainloss.txt', trainer.get_train_loss_history(), fmt='%f')
-np.savetxt(savepath + '/' + 'valloss.txt', trainer.get_val_loss_history(), fmt='%f')
+    np.savetxt(savepath + '/' + 'trainloss.txt', trainer.get_train_loss_history(), fmt='%f')
+    np.savetxt(savepath + '/' + 'valloss.txt', trainer.get_val_loss_history(), fmt='%f')
 
-print(f"ELAPSED TIME: {endtime-starttime} SECONDS")
-print(f"Model Parameter Count: {count_params(model)}")
-print(f"Best Epoch: {bestepoch}")
-print(f"Best Loss: {bestloss}")
+    print(f"ELAPSED TIME: {endtime-starttime} SECONDS")
+    print(f"Model Parameter Count: {count_params(model)}")
+    print(f"Best Epoch: {bestepoch}")
+    print(f"Best Loss: {bestloss}")
 
+print('test')
 # Plot the loss and accuracy from training history
 # fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
 # ax1.plot(epoch_train_loss)

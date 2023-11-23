@@ -11,6 +11,7 @@ class Trainer:
                  optimizer: Optimizer, saveDirectory, scheduler=None, config=None):
         self.trainLoader = dataLoader
         self.valLoader = valData
+        self.evaluator = None
 
         self.criterion = loss_fn
         self.optimizer = optimizer
@@ -100,10 +101,14 @@ class Trainer:
                     self.save_model('bestmodel.pth')
 
                 # Save model every "saveincrement" epochs
+                # Also perform evaluation
                 if (epoch + 1) % self.saveincrement == 0:
                     self.save_model('epoch' + str(epoch + 1) + '.pth')
+                    if self.evaluator is not None:
+                        self.evaluator.evaluate()
 
                 tqdm_epochs.set_postfix({"Epoch": epoch, "Train Loss": trainloss, "Val Loss": vloss})
+
 
         print("------------------------------------------------")
         print("Training Done!")
@@ -155,3 +160,15 @@ class Trainer:
 
     def get_val_loss_history(self):
         return self.val_loss_history
+
+    def set_evaluator(self, evaluator):
+        self.evaluator = evaluator
+
+    def get_model(self):
+        return self.model
+
+    def get_criterion(self):
+        return self.criterion
+
+    def get_save_dir(self):
+        return self.saveDirectory
