@@ -17,7 +17,8 @@ datapath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - Gen
 savepath = 'I:\CS_4644_Project\src\saved_models\DummyNet'
 print(savepath)
 
-trainLoader, valLoader, testLoader = dataset.getDeblurDataLoader('Dataset',datapath,batch_size=4,split=(0.01,0.01,0.98))
+trainLoader, valLoader, testLoader = dataset.getDeblurDataLoader('Dataset',datapath,batch_size=4,
+                                                                 split=(0.01,0.01,0.98),memload=True)
 
 model = models.DummyNet()
 
