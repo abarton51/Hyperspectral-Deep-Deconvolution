@@ -70,7 +70,7 @@ class DeblurDataset(Dataset):
                 #In case we ever have multi-channel mono...
                 self.mono_ds = self.mono_ds[:,None,:,:]
             self.gt_ds = torch.Tensor(self.gt_ds[:])
-            self.blur_ds = torch.Tensor(self.gt_ds[:])
+            self.blur_ds = torch.Tensor(self.blur_ds[:])
 
     def __len__(self):
         return self.info.shape[0]
