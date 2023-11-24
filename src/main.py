@@ -24,14 +24,16 @@ torch.manual_seed(0)
 torch.cuda.manual_seed(0)
 np.random.seed(0)
 
-
 # Set save and data directories
 datapath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General'
 #savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\DummyNet'
 savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ClassicUnet'
+#------#
+# Austin's local directories
+#datapath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\data'
+#savepath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\saved_models'
 config_file = ''
 print(savepath)
-
 
 # Perform training?
 trainingMode = False
@@ -40,8 +42,7 @@ trainingMode = False
 evaluationMode = True
 
 trainLoader, valLoader, testLoader = dataset.getDeblurDataLoader('Dataset', datapath, batch_size=64,
-                                                                 split=(0.8, 0.1, 0.1), memload=True)
-
+                                                                 split=(0.8, 0.1, 0.1), memload=False)
 model = models.ClassicUnet()
 #model = models.DummyNet()
 numparams = count_params(model)

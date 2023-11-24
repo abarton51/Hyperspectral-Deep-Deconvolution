@@ -9,6 +9,14 @@ __pycache__/
 # h5 Data
 *.h5
 
+# Austin files
+src/saved_models/bestmodel_austin_demo.pth
+src/saved_models/figs
+
+# saved models
+*.pth
+src/saved_models
+
 # TIFF Data
 *.tiff
 

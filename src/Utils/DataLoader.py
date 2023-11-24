@@ -85,7 +85,7 @@ class DeblurDataset(Dataset):
             mono_image, gt_image, blur_image = self.transform(mono_image, gt_image, blur_image)
         else:
             if self.memload:
-                return mono_image, gt_image, blur_image
+                return mono_image, gt_image, blur_image, idx
             else:
                 mono_image = torch.Tensor(mono_image)
                 # In case that we are reading a single-channel image (which we are), add singleton dim
@@ -95,7 +95,7 @@ class DeblurDataset(Dataset):
                 gt_image = torch.Tensor(gt_image)
                 blur_image = torch.Tensor(blur_image)
 
-        return mono_image, gt_image, blur_image
+        return mono_image, gt_image, blur_image, idx
 
     def __del__(self):
         self.h5_file.close()

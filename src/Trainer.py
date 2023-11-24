@@ -24,6 +24,7 @@ class Trainer:
 
         self.train_loss_history = np.array([],dtype=np.float32)
         self.val_loss_history = np.array([],dtype=np.float32)
+        self.idx_history = []
 
         # if the user did not present a co initialize default config
         if config is None:
@@ -45,7 +46,7 @@ class Trainer:
         self.model.train()
         avgloss = torch.Tensor([0])
         with tqdm(self.trainLoader, position = 0, desc = 'Batch') as tqdm_data_loader:
-            for batch, (inputs, gt, _) in enumerate(tqdm_data_loader):
+            for batch, (inputs, gt, _, idx) in enumerate(tqdm_data_loader):
                 self.optimizer.zero_grad()
 
                 # Put data on target device
