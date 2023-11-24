@@ -30,7 +30,7 @@ class Trainer:
             config = dict()
             config["epochs"] = 1000
             config["doplot"] = True
-            config["saveincrement"] = 2
+            config["saveincrement"] = 100
 
         self.epochs = config["epochs"]  # total number epochs
         self.doplot = config["doplot"]  # output epoch plots?
