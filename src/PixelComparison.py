@@ -100,7 +100,7 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None):
     if pic_names==None:
         pic_names = ['Image'] * num_samples
 
-    plt.style.use('dark_background')
+    plt.style.use('seaborn')
     marker_colors = ['b', 'm', 'r']
     gt_line_colors = ['dodgerblue', 'blueviolet', 'firebrick']
     pred_line_colors = ['darkturquoise', 'orchid', 'tomato']
