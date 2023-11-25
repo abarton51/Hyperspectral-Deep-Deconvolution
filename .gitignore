@@ -12,6 +12,7 @@ __pycache__/
 # Austin files
 src/saved_models/bestmodel_austin_demo.pth
 src/saved_models/figs
+src/austin_eda.ipynb
 
 # saved models
 *.pth

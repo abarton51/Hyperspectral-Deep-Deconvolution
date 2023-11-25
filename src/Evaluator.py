@@ -18,13 +18,15 @@ class Evaluator:
         self.PSNR = 0
 
     # Create pseudo RGB images by taking slices of the hyperspectral image
-    def create_pseudoRGB(self, hyper):
+    def create_pseudoRGB(self, hyper, transpose=True):
         # this is under the assumption the indices correspond to the wavelengths:
         # 0 - 420nm
         # 14 - 560nm
         # 28 - 700nm
         RGB = np.array(hyper[(28, 14, 0), :, :].to('cpu'))
-        return np.transpose(RGB, axes=(1,2,0))
+        if transpose:
+            return np.transpose(RGB, axes=(1,2,0))
+        return RGB
 
     def greyscale(self, hyper):
         return np.array(hyper.mean(0).to('cpu'))

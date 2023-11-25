@@ -20,9 +20,19 @@ def to_numpy(x):
 
 
 def getDeblurDataLoader(filename, path, batch_size=64, split=(0.8, 0.1, 0.1), num_workers=0, use_transform=False,
-                        memload=False, seed=1):
+                        memload=False, seed=1, test_only=False):
 
     dataset = DeblurDataset(filename, root_dir=path, memload=memload)
+    if test_only:
+        testLoader = DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=True
+        )
+        return testLoader
+    
     trainset, valset, testset = torch.utils.data.random_split(dataset, split)
     trainLoader = DataLoader(
         trainset,

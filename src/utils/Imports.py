@@ -15,15 +15,16 @@ import scipy.io
 import base64
 import textwrap
 
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
 import torch
 
 from matplotlib import pyplot as plt
 import seaborn as sn
 from tqdm import tqdm
 
-from Utils.GetLowestGPU import GetLowestGPU
+try:
+    from Utils.GetLowestGPU import GetLowestGPU
+except:
+    from GetLowestGPU import GetLowestGPU
 
 import logging
 from functools import lru_cache
