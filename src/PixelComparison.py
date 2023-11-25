@@ -122,10 +122,10 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None):
             
             rand_pixel_str = 'Random Pixel ' + str(i+1)
 
-            ax.scatter(channels, pred_ri, s=15, c=c_marker, marker='v', label='Predicted ' + rand_pixel_str)
-            ax.scatter(channels, gt_ri, s=15, c=c_marker, label='Ground Truth ' + rand_pixel_str)
-            ax.plot(gt_ri, c=c_gt_line)
-            ax.plot(pred_ri, c=c_pred_line)
+            ax.scatter(channels, pred_ri, s=15, c=c_marker, marker='v')
+            ax.scatter(channels, gt_ri, s=15, c=c_marker)
+            ax.plot(gt_ri, c=c_gt_line, label='Predicted ' + rand_pixel_str)
+            ax.plot(pred_ri, c=c_pred_line, label='Ground Truth ' + rand_pixel_str)
             ax.set_xlabel('Channels; 420-700 nm')
             ax.set_ylabel('Raw Pixel Values')
             ax.set_title(pic_names[j] + '; Pixel Value Comparison across Wavelength')
