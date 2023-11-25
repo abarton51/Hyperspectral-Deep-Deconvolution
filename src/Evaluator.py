@@ -33,8 +33,13 @@ class Evaluator:
     def create_spectral_profile(self, pred, gt):
         return None
 
-    def plotter(self, mono, pred, gt, blur, idx, filename):
-        for i in range(self.samples):
+    def plotter(self, mono, pred, gt, blur, idx, filename, plot_all=False):
+        
+        n = self.samples
+        if plot_all:
+            n = mono.shape[0]
+        
+        for i in range(n):
             fig, axs = plt.subplots(nrows=3, ncols=5, tight_layout=True)
             fig.set_size_inches(5,3)
 
@@ -108,13 +113,14 @@ class Evaluator:
                 psnr = utils.PSNR(pred, gt)
                 
                 # if there are any test samples from the batch whose OG idx is < 100, plot them
-                if len(interesting_idx) > 0:
+                if interesting_idx.sum().item() > 0:
                     self.plotter(inputs[interesting_idx, :, :, :],
                                 pred[interesting_idx, :, :, :],
                                 gt[interesting_idx, :, :, :],
                                 blur[interesting_idx, :, :, :],
                                 idx[interesting_idx],
-                                filename)
+                                filename,
+                                plot_all=True)
 
                 if i == 0 and filename is not None:
                     self.plotter(inputs[0:self.samples, :, :, :],

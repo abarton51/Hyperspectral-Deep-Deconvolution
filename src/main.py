@@ -25,13 +25,13 @@ torch.cuda.manual_seed(0)
 np.random.seed(0)
 
 # Set save and data directories
-datapath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General'
+#datapath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General'
 #savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\DummyNet'
-savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ClassicUnet'
+#savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ClassicUnet'
 #------#
 # Austin's local directories
-#datapath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\data'
-#savepath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\saved_models'
+datapath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\data'
+savepath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\saved_models\\ClassicUnet'
 config_file = ''
 print(savepath)
 
