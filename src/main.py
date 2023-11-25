@@ -51,8 +51,8 @@ model = models.ClassicUnet()
 numparams = count_params(model)
 print(f"Number of parameters: {numparams}")
 
-optimizer = Adam(model.parameters(), lr=0.01)
-scheduler = lrScheduler.MultiStepLR(optimizer,milestones=[100,200,300,900], gamma=0.1)
+optimizer = Adam(model.parameters(), lr=0.1)
+scheduler = lrScheduler.MultiStepLR(optimizer,milestones=[10,50,150,300,700], gamma=0.1)
 #scheduler = lrScheduler.StepLR(optimizer, step_size=5, gamma=0.2)
 
 loss_fn = nn.MSELoss()  # to be changed later if needed
