@@ -114,12 +114,12 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None):
         for i, ri in enumerate(coords):
             gt_ri = to_numpy(gt[j, ri[0], ri[1]])
             pred_ri = to_numpy(pred[j, ri[0], ri[1]])
-            
+
             c_idx = i % c_len
             c_marker = marker_colors[c_idx]
             c_gt_line = gt_line_colors[c_idx]
             c_pred_line = pred_line_colors[c_idx]
-            
+
             rand_pixel_str = 'Random Pixel ' + str(i+1)
 
             ax.scatter(channels, pred_ri, s=15, c=c_marker, marker='v')
@@ -131,14 +131,14 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None):
             ax.set_title(pic_names[j] + '; Pixel Value Comparison across Wavelength')
             ax.legend()
             fig.savefig(save_path + '\\' + str(j) + pic_names[j])
-            
+
             ax1.imshow(prgb_gt_j)
             ax1.plot(ri[0], ri[1], marker='v', color=c_marker, markersize=10, label=rand_pixel_str)
             ax1.legend()
             ax2.imshow(to_numpy(prgb_pred_j))
             ax2.plot(ri[0], ri[1], marker='v', color=c_marker, markersize=10, label=rand_pixel_str)
             ax2.legend()
-            
+
         ax1.set_title('Ground Truth')
         ax2.set_title('Predicted')
         fig1.savefig(save_path + '\\' + str(j) + pic_names[j] + '_gt_markedpixels')
