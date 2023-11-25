@@ -124,8 +124,8 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None):
 
             ax.scatter(channels, pred_ri, s=15, c=c_marker, marker='v')
             ax.scatter(channels, gt_ri, s=15, c=c_marker)
-            ax.plot(gt_ri, c=c_gt_line, label='Predicted ' + rand_pixel_str)
-            ax.plot(pred_ri, c=c_pred_line, label='Ground Truth ' + rand_pixel_str)
+            ax.plot(gt_ri, c=c_gt_line, label='Ground Truth ' + rand_pixel_str)
+            ax.plot(pred_ri, c=c_pred_line, label='Predicted ' + rand_pixel_str)
             ax.set_xlabel('Channels; 420-700 nm')
             ax.set_ylabel('Raw Pixel Values')
             ax.set_title(pic_names[j] + '; Pixel Value Comparison across Wavelength')
@@ -134,10 +134,14 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None):
 
             ax1.imshow(prgb_gt_j)
             ax1.plot(ri[0], ri[1], marker='v', color=c_marker, markersize=10, label=rand_pixel_str)
-            ax1.legend()
+            l1 = ax1.legend()
+            for text in l1.get_texts():
+                text.set_color("white")
             ax2.imshow(to_numpy(prgb_pred_j))
             ax2.plot(ri[0], ri[1], marker='v', color=c_marker, markersize=10, label=rand_pixel_str)
-            ax2.legend()
+            l2 = ax2.legend()
+            for text in l2.get_texts():
+                text.set_color("white")
 
         ax1.set_title('Ground Truth')
         ax2.set_title('Predicted')
