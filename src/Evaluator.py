@@ -16,6 +16,11 @@ class Evaluator:
         self.saveDirectory = trainer.get_save_dir() + '/' + 'figs'
         self.samples = 4
         self.PSNR = 0
+        self.basepsnr = 0
+        self.psnr_history = np.array([], dtype=np.float32)
+        self.basepsnr_history = np.array([], dtype=np.float32)
+        self.test_loss_history = np.array([], dtype=np.float32)
+
 
     # Create pseudo RGB images by taking slices of the hyperspectral image
     def create_pseudoRGB(self, hyper, transpose=True):
@@ -96,6 +101,7 @@ class Evaluator:
         model.eval()
         avgloss = torch.Tensor([0])
         avgpsnr = torch.Tensor([0])
+        avgbase = torch.Tensor([0])
         idx_history = torch.Tensor([])
 
         # no grad for validation
@@ -104,15 +110,17 @@ class Evaluator:
                 # data to target device
                 inputs = inputs.to(self.device)
                 gt = gt.to(self.device)
+                blur = blur.to(self.device)
                 
                 # track idx from OG dataset
                 #idx_history = torch.cat([idx_history, idx])
-                interesting_idx = idx < 100
+                interesting_idx = idx < 200
                 
                 # validation loss
                 pred = model(inputs)
                 loss = criterion(pred, gt)
                 psnr = utils.PSNR(pred, gt)
+                basepsnr = utils.PSNR(blur, gt)
                 
                 # if there are any test samples from the batch whose OG idx is < 100, plot them
                 if interesting_idx.sum().item() > 0:
@@ -135,14 +143,31 @@ class Evaluator:
                 # update avg test loss
                 avgloss += loss.detach().to('cpu')
                 avgpsnr += psnr
+                avgbase += basepsnr
             
             avgloss = avgloss / (i + 1)
             avgloss = np.array(avgloss)
             avgpsnr = avgpsnr / (i + 1)
             avgpsnr = np.array(avgpsnr)
+            avgbase = avgbase/ (i+1)
+            avgbase = np.array(avgbase)
             self.loss = avgloss[0]
             self.psnr = avgpsnr[0]
-            return self.loss, self.psnr
+            self.basePSNR = avgbase[0]
+
+            self.psnr_history = np.append(self.psnr_history, avgpsnr)
+            self.basepsnr_history = np.append(self.basepsnr_history, avgbase)
+            self.test_loss_history = np.append(self.test_loss_history, avgloss)
+            return self.loss, self.psnr, self.basePSNR
 
     def get_test_loss(self):
         return self.loss
+
+    def get_test_loss_history(self):
+        return self.test_loss_history
+
+    def get_psnr_history(self):
+        return self.psnr_history
+
+    def get_base_psnr_history(self):
+        return self.basepsnr_history

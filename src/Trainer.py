@@ -127,7 +127,7 @@ class Trainer:
 
         # no grad for validation
         with torch.no_grad():
-            for i, (inputs, gt, _) in enumerate(self.valLoader):
+            for i, (inputs, gt, _, _) in enumerate(self.valLoader):
 
                 # data to target device
                 inputs = inputs.to(self.device)
