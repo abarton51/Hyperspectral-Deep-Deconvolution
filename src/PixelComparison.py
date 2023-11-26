@@ -134,9 +134,9 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None, seed=None):
             ax.set_title(pic_names[j] + '; Pixel Value Comparison across Wavelength')
             ax.legend()
             if seed!=None:
-                fig.savefig(save_path + '\\' + str(seed) + '_seed_' + pic_names[j])
+                fig.savefig(save_path + '\\' + str(seed) + '_seed_' + pic_names[j] + '_pixel_plot')
             else:
-                fig.savefig(save_path + '\\' + pic_names[j])
+                fig.savefig(save_path + '\\' + pic_names[j] + '_pixel_plot')
 
             ax1.imshow(prgb_gt_j)
             ax1.plot(ri[0], ri[1], marker='v', color=c_marker, markersize=10, label=rand_pixel_str)
