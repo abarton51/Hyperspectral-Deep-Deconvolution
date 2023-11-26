@@ -45,7 +45,7 @@ torch.manual_seed(0)
 torch.cuda.manual_seed(0)
 np.random.seed(0)
 datapath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\data'
-save_path = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\saved_models\\ClassicUnet'
+save_path = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\saved_models\\ClassicUnetFinal'
 testDL = DataLoader.getDeblurDataLoader('InterestingDataset', datapath, batch_size=16, memload=False, test_only=True)
 
 trainLoader, valLoader, testLoader = DataLoader.getDeblurDataLoader('Dataset', datapath, batch_size=64,
