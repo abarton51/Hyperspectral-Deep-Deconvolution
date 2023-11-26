@@ -93,6 +93,7 @@ class Evaluator:
             axs[0, 4].axis("off")
 
             plt.savefig(self.saveDirectory + '/' + str(idxx) + '_' + filename + str(i) + '.png', bbox_inches='tight')
+            plt.close(fig)
 
     def test_model(self, filename=None):
         model = self.trainer.get_model()

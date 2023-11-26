@@ -27,7 +27,7 @@ np.random.seed(0)
 # Set save and data directories
 datapath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General'
 #savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\DummyNet'
-savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ClassicUnetFinal'
+savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ClassicUnetFinal2'
 #----------------------------#
 # Austin's local directories
 #datapath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\data'

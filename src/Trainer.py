@@ -5,6 +5,8 @@ import torch.nn as nn
 from torch.optim import Optimizer
 from tqdm import tqdm
 import numpy as np
+from Utils.utils import plot_grad_flow
+from Utils.utils import accumulate_grad_flow
 
 class Trainer:
     def __init__(self, dataLoader: DataLoader, valData: DataLoader, model: nn.Module, loss_fn: nn.Module,
@@ -31,11 +33,12 @@ class Trainer:
             config = dict()
             config["epochs"] = 1000
             config["doplot"] = True
-            config["saveincrement"] = 100
+            config["saveincrement"] = 2
 
         self.epochs = config["epochs"]  # total number epochs
         self.doplot = config["doplot"]  # output epoch plots?
         self.saveincrement = config["saveincrement"]  # save model weights every few epochs
+        self.currepoch = 0
 
     # initialize a new trainer by loading in the parameters from a model weight file
     # @classmethod
@@ -45,6 +48,8 @@ class Trainer:
     def train_epoch(self):
         self.model.train()
         avgloss = torch.Tensor([0])
+        grad_flow_ave = None
+        grad_flow_max = None
         with tqdm(self.trainLoader, position = 0, desc = 'Batch') as tqdm_data_loader:
             for batch, (inputs, gt, _, idx) in enumerate(tqdm_data_loader):
                 self.optimizer.zero_grad()
@@ -57,12 +62,14 @@ class Trainer:
                 pred = self.model(inputs)
                 loss = self.criterion(pred, gt)
                 loss.backward()
-
+                grad_flow_ave,grad_flow_max = accumulate_grad_flow(self.model.named_parameters(),grad_flow_ave,grad_flow_max)
                 #step gradients
                 self.optimizer.step()
 
                 # update avg loss of this epoch
                 avgloss += loss.detach().to('cpu')
+
+        plot_grad_flow(self.model.named_parameters(), grad_flow_ave, grad_flow_max, self.saveDirectory, self.currepoch + 1)
 
         # record loss history
         avgloss = avgloss / (batch + 1)
@@ -86,7 +93,7 @@ class Trainer:
 
         with tqdm(range(epochs), position=1, initial=1, desc='Training Progress') as tqdm_epochs:
             for epoch in tqdm_epochs:
-
+                self.currepoch = epoch
                 # Train one epoch and validate
                 trainloss = self.train_epoch()
                 vloss = self.validate()
