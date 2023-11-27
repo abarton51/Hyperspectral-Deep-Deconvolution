@@ -40,12 +40,12 @@ def to_torch(x):
 def to_numpy(x):
     return x.detach().cpu().numpy()
 
-random.seed(0)
-torch.manual_seed(0)
-torch.cuda.manual_seed(0)
-np.random.seed(0)
+#random.seed(0)
+#torch.manual_seed(0)
+#torch.cuda.manual_seed(0)
+#np.random.seed(0)
 datapath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\data'
-save_path = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\saved_models\\ClassicUnet'
+save_path = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\saved_models\\ClassicUnetFinal'
 testDL = DataLoader.getDeblurDataLoader('InterestingDataset', datapath, batch_size=16, memload=False, test_only=True)
 
 trainLoader, valLoader, testLoader = DataLoader.getDeblurDataLoader('Dataset', datapath, batch_size=64,
@@ -72,9 +72,6 @@ def read_h5(filename, num_samples):
     h5 = h5py.File(filename,'r')
     gt_data = h5['groundtruth']
     mono_data = h5['mono']
-    coord_data = h5['coordinate']
-    info_data = h5['info']
-    blurred_data = h5['blurred']
     gts = torch.tensor([])
     inputs = []
     preds = torch.tensor([])
@@ -88,7 +85,13 @@ def read_h5(filename, num_samples):
     h5.close()
     return gts, inputs, preds
 
-def pixel_compare(gt, pred, save_path, coords=None, pic_names=None):
+def pixel_compare(gt, pred, save_path, coords=None, pic_names=None, seed=None):
+    if seed!=None:
+        random.seed(seed)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+        np.random.seed(seed)
+    
     channels = np.arange(gt.shape[3])
     num_samples = gt.shape[0]
     if coords==None:
@@ -130,7 +133,10 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None):
             ax.set_ylabel('Raw Pixel Values')
             ax.set_title(pic_names[j] + '; Pixel Value Comparison across Wavelength')
             ax.legend()
-            fig.savefig(save_path + '\\' + str(j) + pic_names[j])
+            if seed!=None:
+                fig.savefig(save_path + '\\' + str(seed) + '_seed_' + pic_names[j] + '_pixel_plot')
+            else:
+                fig.savefig(save_path + '\\' + pic_names[j] + '_pixel_plot')
 
             ax1.imshow(prgb_gt_j)
             ax1.plot(ri[0], ri[1], marker='v', color=c_marker, markersize=10, label=rand_pixel_str)
@@ -145,13 +151,17 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None):
 
         ax1.set_title('Ground Truth')
         ax2.set_title('Predicted')
-        fig1.savefig(save_path + '\\' + str(j) + pic_names[j] + '_gt_markedpixels')
-        fig2.savefig(save_path + '\\' + str(j) + pic_names[j] + '_pred_markedpixels')
+        if seed!=None:
+            fig1.savefig(save_path + '\\' + str(seed) + '_seed_' + pic_names[j] + '_gt_markedpixels')
+            fig2.savefig(save_path + '\\' + str(seed) + '_seed_'  + pic_names[j] + '_pred_markedpixels')
+        else:
+            fig1.savefig(save_path + '\\' + pic_names[j] + '_gt_markedpixels')
+            fig2.savefig(save_path + '\\' + pic_names[j] + '_pred_markedpixels')
 
 
 
 
 gt_data, inputs, preds = read_h5(filename, 4)
-pic_names = ['Beads', 'Doll', 'Flowers', 'Public Space']
+pic_names = ['Beads', 'Doll', 'Flowers', 'Public_Space']
 save_plot_path = save_path + '\\figs\\pixel_comparison'
-pixel_compare(gt_data, preds, save_plot_path, pic_names=pic_names)
+pixel_compare(gt_data, preds, save_plot_path, pic_names=pic_names, seed=0)
