@@ -2,7 +2,7 @@ import os
 import time
 import torch
 import torch.nn as nn
-from torch.optim import Adam
+from torch.optim import AdamW
 import torch.optim.lr_scheduler as lrScheduler
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,7 +29,7 @@ np.random.seed(0)
 # Set save and data directories
 datapath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General'
 #savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\DummyNet'
-savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ClassicUnetFinal2'
+savepath = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ClassicUnetFinal_LR'
 #----------------------------#
 # Austin's local directories
 #datapath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\data'
@@ -47,22 +47,22 @@ evaluationMode = True
 
 print('Begin Dataset loading...')
 trainLoader, valLoader, testLoader = dataset.getDeblurDataLoader('Dataset', datapath, batch_size=128,
-                                                                 split=(0.8, 0.1, 0.1), memload=False)
+                                                                 split=(0.8, 0.1, 0.1), memload=True)
 
 print('Dataset loaded')
 model = models.ClassicUnet()
 numparams = count_params(model)
 print(f"Number of parameters: {numparams}")
 
-optimizer = Adam(model.parameters(), lr=0.1)
-scheduler = lrScheduler.MultiStepLR(optimizer,milestones=[10,50,150,300,700], gamma=0.1)
+optimizer = AdamW(model.parameters(), lr=0.1)
+scheduler = lrScheduler.MultiStepLR(optimizer,milestones=[10,50,250,550,950], gamma=0.1)
 #scheduler = lrScheduler.StepLR(optimizer, step_size=5, gamma=0.2)
 
-#loss_fn = nn.MSELoss()  # to be changed later if needed
+loss_fn = nn.MSELoss()  # to be changed later if needed
 # Important Note: SSIM loss is in [0, 2]. Therefore, we need to set the MSE and SSIM weight to get desired loss behavior
-loss_fn = DeblurLoss.DeblurCustomLoss(window_size=7, size_average=True, is_loss=True, plus_mse=True, mse_weight=0.1, ssim_weight=1)
+#loss_fn = DeblurLoss.DeblurCustomLoss(window_size=7, size_average=True, is_loss=True, plus_mse=True, mse_weight=0.5, ssim_weight=0.25)
 
-trainer = Trainer(trainLoader, valLoader, model, loss_fn, optimizer, savepath, scheduler=None) # Initialize trainer
+trainer = Trainer(trainLoader, valLoader, model, loss_fn, optimizer, savepath, scheduler=scheduler) # Initialize trainer
 evaluator = Evaluator(trainer, testLoader) # Initialize Evaluator
 trainer.set_evaluator(evaluator) # Set the evaluator inside the trainer
 

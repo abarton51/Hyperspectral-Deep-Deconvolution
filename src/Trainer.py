@@ -33,7 +33,7 @@ class Trainer:
             config = dict()
             config["epochs"] = 1000
             config["doplot"] = True
-            config["saveincrement"] = 2
+            config["saveincrement"] = 100
 
         self.epochs = config["epochs"]  # total number epochs
         self.doplot = config["doplot"]  # output epoch plots?
@@ -62,6 +62,7 @@ class Trainer:
                 pred = self.model(inputs)
                 loss = self.criterion(pred, gt)
                 loss.backward()
+                nn.utils.clip_grad_norm_(self.model.parameters(),max_norm = 1)
                 grad_flow_ave,grad_flow_max = accumulate_grad_flow(self.model.named_parameters(),grad_flow_ave,grad_flow_max)
                 #step gradients
                 self.optimizer.step()
@@ -101,6 +102,7 @@ class Trainer:
                 # If we do want learning rate decay, step it now
                 if self.scheduler is not None:
                     self.scheduler.step()
+                    print(self.optimizer.param_groups[0]["lr"])
 
                 # Save the best model
                 if vloss < bestloss:
