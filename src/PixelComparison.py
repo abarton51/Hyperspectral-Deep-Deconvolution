@@ -2,8 +2,6 @@ import numpy as np
 import pandas as pd
 
 import os
-import sys
-sys.path.append('../')
 
 from PIL import Image
 from PIL import ImageShow
@@ -24,6 +22,7 @@ import tqdm
 
 from Utils.Imports import *
 from Utils import DataLoader
+from Utils import DeblurLoss
 from Evaluator import Evaluator
 from Trainer import Trainer
 import torchvision as ttv
@@ -39,27 +38,22 @@ def to_torch(x):
         return x
 def to_numpy(x):
     return x.detach().cpu().numpy()
-
-#random.seed(0)
-#torch.manual_seed(0)
-#torch.cuda.manual_seed(0)
-#np.random.seed(0)
+    
 datapath = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\data'
-save_path = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\saved_models\\ClassicUnetFinal'
-testDL = DataLoader.getDeblurDataLoader('InterestingDataset', datapath, batch_size=16, memload=False, test_only=True)
+save_path = 'C:\\Users\\Teddy\\Documents\\Academics\\Deep Learning\\Projects\\CS_4644_Project\\src\\saved_models\\ClassicUnet'
 
 trainLoader, valLoader, testLoader = DataLoader.getDeblurDataLoader('Dataset', datapath, batch_size=64,
                                                                  split=(0.8, 0.1, 0.1), memload=False)
 model = models.ClassicUnet()
 
 optimizer = Adam(model.parameters(), lr=0.01)
-scheduler = lrScheduler.MultiStepLR(optimizer,milestones=[100,200,300,1000], gamma=0.1)
-#scheduler = lrScheduler.StepLR(optimizer, step_size=5, gamma=0.2)
 
-loss_fn = nn.MSELoss()  # to be changed later if needed
+loss_fn = nn.MSELoss()
+#loss_fn = DeblurLoss.DeblurCustomLoss(window_size=7, size_average=True, is_loss=True, plus_mse=True, mse_weight=0.5, ssim_weight=0.25)
 
-trainer = Trainer(trainLoader, valLoader, model, loss_fn, optimizer, save_path, scheduler=None) # Initialize trainer
-evaluator = Evaluator(trainer, testDL) # Initialize Evaluator
+# Because how the code has been set up, the Evalutor needs a Trainer. So we make a default Trainer so we can use the Evaluator (WE ARE NOT TRAINING)
+trainer = Trainer(trainLoader, valLoader, model, loss_fn, optimizer, save_path, scheduler=None)
+evaluator = Evaluator(trainer, testLoader) # Initialize Evaluator
 trainer.set_evaluator(evaluator) # Set the evaluator inside the trainer
 
 trainer.load_model(save_path + '/bestmodel.pth')
@@ -159,9 +153,11 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None, seed=None):
             fig2.savefig(save_path + '\\' + pic_names[j] + '_pred_markedpixels')
 
 
-
+seed=None # set to None if using manually defined coordinates
+coords = [[120, 80], [40, 20], [64, 42]] # set to None if using randomly generated coordiates
 
 gt_data, inputs, preds = read_h5(filename, 4)
 pic_names = ['Beads', 'Doll', 'Flowers', 'Public_Space']
 save_plot_path = save_path + '\\figs\\pixel_comparison'
-pixel_compare(gt_data, preds, save_plot_path, pic_names=pic_names, seed=0)
+
+pixel_compare(gt_data, preds, save_plot_path, coords=coords, pic_names=pic_names, seed=seed)
