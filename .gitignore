@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Ignore all figs in paper folder
+paper/*.png
+
 # C extensions
 *.so
 
