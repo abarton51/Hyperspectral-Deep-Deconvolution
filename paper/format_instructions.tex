@@ -1,21 +1,27 @@
 \documentclass{article}
 
+
 % if you need to pass options to natbib, use, e.g.:
 %     \PassOptionsToPackage{numbers, compress}{natbib}
-% before loading neurips_2020
+% before loading neurips_2023
+
 
 % ready for submission
-% \usepackage{neurips_2020}
+\usepackage{neurips_2023}
+
 
 % to compile a preprint version, e.g., for submission to arXiv, add add the
 % [preprint] option:
-%     \usepackage[preprint]{neurips_2020}
+%     \usepackage[preprint]{neurips_2023}
+
 
 % to compile a camera-ready version, add the [final] option, e.g.:
-%     \usepackage[final]{neurips_2020}
+%     \usepackage[final]{neurips_2023}
+
 
 % to avoid loading the natbib package, add option nonatbib:
-     \usepackage[nonatbib]{neurips_2020}
+%    \usepackage[nonatbib]{neurips_2023}
+
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -25,8 +31,11 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
 
-\title{Formatting Instructions For NeurIPS 2020}
+
+\title{Formatting Instructions For NeurIPS 2023}
+
 
 % The \author macro works with any number of authors. There are two commands
 % used to separate the names and addresses of multiple authors: \And and \AND.
@@ -35,6 +44,7 @@
 % lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
 % authors names on the first line, and the last on the second line, try using
 % \AND instead of \And before the third author name.
+
 
 \author{%
   David S.~Hippocampus\thanks{Use footnote for providing further information
@@ -67,9 +77,12 @@
   % \texttt{email} \\
 }
 
+
 \begin{document}
 
+
 \maketitle
+
 
 \begin{abstract}
   The abstract paragraph should be indented \nicefrac{1}{2}~inch (3~picas) on
@@ -79,71 +92,82 @@
   must be limited to one paragraph.
 \end{abstract}
 
-\section{Submission of papers to NeurIPS 2020}
 
-NeurIPS requires electronic submissions.  The electronic submission site is
-\begin{center}
-  \url{https://cmt3.research.microsoft.com/NeurIPS2020/}
-\end{center}
+\section{Submission of papers to NeurIPS 2023}
 
-Please read the instructions below carefully and follow them faithfully.
+
+Please read the instructions below carefully and follow them faithfully. \textbf{Important:} This year the checklist will be submitted separately from the main paper in OpenReview, please review it well ahead of the submission deadline: \url{https://neurips.cc/public/guides/PaperChecklist}.
+
 
 \subsection{Style}
 
-Papers to be submitted to NeurIPS 2020 must be prepared according to the
-instructions presented here. Papers may only be up to eight pages long,
-including figures. Additional pages \emph{containing only a section on the broader impact, acknowledgments and/or cited references} are allowed. Papers that exceed eight pages of content will not be reviewed, or in any other way considered for
-presentation at the conference.
 
-The margins in 2020 are the same as those in 2007, which allow for $\sim$$15\%$
-more words in the paper compared to earlier years.
+Papers to be submitted to NeurIPS 2023 must be prepared according to the
+instructions presented here. Papers may only be up to {\bf nine} pages long,
+including figures. Additional pages \emph{containing only acknowledgments and
+references} are allowed. Papers that exceed the page limit will not be
+reviewed, or in any other way considered for presentation at the conference.
+
+
+The margins in 2023 are the same as those in previous years.
+
 
 Authors are required to use the NeurIPS \LaTeX{} style files obtainable at the
 NeurIPS website as indicated below. Please make sure you use the current files
 and not previous versions. Tweaking the style files may be grounds for
 rejection.
 
+
 \subsection{Retrieval of style files}
 
+
 The style files for NeurIPS and other conference information are available on
-the World Wide Web at
+the website at
 \begin{center}
   \url{http://www.neurips.cc/}
 \end{center}
-The file \verb+neurips_2020.pdf+ contains these instructions and illustrates the
+The file \verb+neurips_2023.pdf+ contains these instructions and illustrates the
 various formatting requirements your NeurIPS paper must satisfy.
 
-The only supported style file for NeurIPS 2020 is \verb+neurips_2020.sty+,
+
+The only supported style file for NeurIPS 2023 is \verb+neurips_2023.sty+,
 rewritten for \LaTeXe{}.  \textbf{Previous style files for \LaTeX{} 2.09,
   Microsoft Word, and RTF are no longer supported!}
+
 
 The \LaTeX{} style file contains three optional arguments: \verb+final+, which
 creates a camera-ready copy, \verb+preprint+, which creates a preprint for
 submission to, e.g., arXiv, and \verb+nonatbib+, which will not load the
 \verb+natbib+ package for you in case of package clash.
 
+
 \paragraph{Preprint option}
 If you wish to post a preprint of your work online, e.g., on arXiv, using the
 NeurIPS style, please use the \verb+preprint+ option. This will create a
 nonanonymized version of your work with the text ``Preprint. Work in progress.''
-in the footer. This version may be distributed as you see fit. Please \textbf{do
+in the footer. This version may be distributed as you see fit, as long as you do not say which conference it was submitted to. Please \textbf{do
   not} use the \verb+final+ option, which should \textbf{only} be used for
-papers accepted to NeurIPS.
+papers accepted to NeurIPS. 
+
 
 At submission time, please omit the \verb+final+ and \verb+preprint+
 options. This will anonymize your submission and add line numbers to aid
 review. Please do \emph{not} refer to these line numbers in your paper as they
 will be removed during generation of camera-ready copies.
 
-The file \verb+neurips_2020.tex+ may be used as a ``shell'' for writing your
+
+The file \verb+neurips_2023.tex+ may be used as a ``shell'' for writing your
 paper. All you have to do is replace the author, title, abstract, and text of
 the paper with your own.
+
 
 The formatting instructions contained in these style files are summarized in
 Sections \ref{gen_inst}, \ref{headings}, and \ref{others} below.
 
+
 \section{General formatting instructions}
 \label{gen_inst}
+
 
 The text must be confined within a rectangle 5.5~inches (33~picas) wide and
 9~inches (54~picas) long. The left margin is 1.5~inch (9~picas).  Use 10~point
@@ -152,11 +176,13 @@ preferred typeface throughout, and will be selected for you by default.
 Paragraphs are separated by \nicefrac{1}{2}~line space (5.5 points), with no
 indentation.
 
+
 The paper title should be 17~point, initial caps/lower case, bold, centered
 between two horizontal rules. The top rule should be 4~points thick and the
 bottom rule should be 1~point thick. Allow \nicefrac{1}{4}~inch space above and
 below the title to rules. All pages should start at 1~inch (6~picas) from the
 top of the page.
+
 
 For the final version, authors' names are set in boldface, and each name is
 centered above the corresponding address. The lead author's name is to be listed
@@ -164,42 +190,57 @@ first (left-most), and the co-authors' names (if different address) are set to
 follow. If there is only one co-author, list both author and co-author side by
 side.
 
+
 Please pay special attention to the instructions in Section \ref{others}
 regarding figures, tables, acknowledgments, and references.
+
 
 \section{Headings: first level}
 \label{headings}
 
+
 All headings should be lower case (except for first word and proper nouns),
 flush left, and bold.
 
+
 First-level headings should be in 12-point type.
+
 
 \subsection{Headings: second level}
 
+
 Second-level headings should be in 10-point type.
+
 
 \subsubsection{Headings: third level}
 
+
 Third-level headings should be in 10-point type.
 
+
 \paragraph{Paragraphs}
+
 
 There is also a \verb+\paragraph+ command available, which sets the heading in
 bold, flush left, and inline with the text, with the heading followed by 1\,em
 of space.
 
+
 \section{Citations, figures, tables, references}
 \label{others}
 
+
 These instructions apply to everyone.
 
+
 \subsection{Citations within the text}
+
 
 The \verb+natbib+ package will be loaded for you by default.  Citations may be
 author/year or numeric, as long as you maintain internal consistency.  As to the
 format of the references themselves, any style is acceptable as long as it is
 used consistently.
+
 
 The documentation for \verb+natbib+ may be found at
 \begin{center}
@@ -215,35 +256,43 @@ produces
   Hasselmo, et al.\ (1995) investigated\dots
 \end{quote}
 
+
 If you wish to load the \verb+natbib+ package with options, you may add the
-following before loading the \verb+neurips_2020+ package:
+following before loading the \verb+neurips_2023+ package:
 \begin{verbatim}
    \PassOptionsToPackage{options}{natbib}
 \end{verbatim}
 
+
 If \verb+natbib+ clashes with another package you load, you can add the optional
 argument \verb+nonatbib+ when loading the style file:
 \begin{verbatim}
-   \usepackage[nonatbib]{neurips_2020}
+   \usepackage[nonatbib]{neurips_2023}
 \end{verbatim}
+
 
 As submission is double blind, refer to your own published work in the third
 person. That is, use ``In the previous work of Jones et al.\ [4],'' not ``In our
 previous work [4].'' If you cite your other papers that are not widely available
 (e.g., a journal paper under review), use anonymous author names in the
-citation, e.g., an author of the form ``A.\ Anonymous.''
+citation, e.g., an author of the form ``A.\ Anonymous'' and include a copy of the anonymized paper in the supplementary material.
+
 
 \subsection{Footnotes}
+
 
 Footnotes should be used sparingly.  If you do require a footnote, indicate
 footnotes with a number\footnote{Sample of the first footnote.} in the
 text. Place the footnotes at the bottom of the page on which they appear.
 Precede the footnote with a horizontal rule of 2~inches (12~picas).
 
+
 Note that footnotes are properly typeset \emph{after} punctuation
 marks.\footnote{As in this example.}
 
+
 \subsection{Figures}
+
 
 \begin{figure}
   \centering
@@ -251,25 +300,31 @@ marks.\footnote{As in this example.}
   \caption{Sample figure caption.}
 \end{figure}
 
+
 All artwork must be neat, clean, and legible. Lines should be dark enough for
 purposes of reproduction. The figure number and caption always appear after the
 figure. Place one line space before the figure caption and one line space after
 the figure. The figure caption should be lower case (except for first word and
 proper nouns); figures are numbered consecutively.
 
+
 You may use color figures.  However, it is best for the figure captions and the
 paper body to be legible if the paper is printed in either black/white or in
 color.
 
+
 \subsection{Tables}
+
 
 All tables must be centered, neat, clean and legible.  The table number and
 title always appear before the table.  See Table~\ref{sample-table}.
+
 
 Place one line space before the table title, one line space after the
 table title, and one line space after the table. The table title must
 be lower case (except for first word and proper nouns); tables are
 numbered consecutively.
+
 
 Note that publication-quality tables \emph{do not contain vertical rules.} We
 strongly suggest the use of the \verb+booktabs+ package, which allows for
@@ -278,6 +333,7 @@ typesetting high-quality, professional tables:
   \url{https://www.ctan.org/pkg/booktabs}
 \end{center}
 This package was used to typeset Table~\ref{sample-table}.
+
 
 \begin{table}
   \caption{Sample table title}
@@ -296,7 +352,10 @@ This package was used to typeset Table~\ref{sample-table}.
   \end{tabular}
 \end{table}
 
-\section{Final instructions}
+\subsection{Math}
+Note that display math in bare TeX commands will not create correct line numbers for submission. Please use LaTeX (or AMSTeX) commands for unnumbered display math. (You really shouldn't be using \$\$ anyway; see \url{https://tex.stackexchange.com/questions/503/why-is-preferable-to} and \url{https://tex.stackexchange.com/questions/40492/what-are-the-differences-between-align-equation-and-displaymath} for more information.)
+
+\subsection{Final instructions}
 
 Do not change any aspects of the formatting parameters in the style files.  In
 particular, do not modify the width or length of the rectangle the text should
@@ -304,30 +363,34 @@ fit into, and do not change font sizes (except perhaps in the
 \textbf{References} section; see below). Please note that pages should be
 numbered.
 
+
 \section{Preparing PDF files}
+
 
 Please prepare submission files with paper size ``US Letter,'' and not, for
 example, ``A4.''
+
 
 Fonts were the main cause of problems in the past years. Your PDF file must only
 contain Type 1 or Embedded TrueType fonts. Here are a few instructions to
 achieve this.
 
+
 \begin{itemize}
 
+
 \item You should directly generate PDF files using \verb+pdflatex+.
+
 
 \item You can check which fonts a PDF files uses.  In Acrobat Reader, select the
   menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
   also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
   available out-of-the-box on most Linux machines.
 
-\item The IEEE has recommendations for generating PDF files whose fonts are also
-  acceptable for NeurIPS. Please see
-  \url{http://www.emfield.org/icuwb2010/downloads/IEEE-PDF-SpecV32.pdf}
 
 \item \verb+xfig+ "patterned" shapes are implemented with bitmap fonts.  Use
   "solid" shapes instead.
+
 
 \item The \verb+\bbold+ package almost always uses bitmap fonts.  You should use
   the equivalent AMS Fonts:
@@ -344,12 +407,16 @@ workaround for reals, natural and complex:
 \end{verbatim}
 Note that \verb+amsfonts+ is automatically loaded by the \verb+amssymb+ package.
 
+
 \end{itemize}
+
 
 If your file contains type 3 fonts or non embedded TrueType fonts, we will ask
 you to fix it.
 
+
 \subsection{Margins in \LaTeX{}}
+
 
 Most of the margin problems come from figures positioned by hand using
 \verb+\special+ or other commands. We suggest using the command
@@ -362,52 +429,61 @@ figure width as a multiple of the line width as in the example below:
 See Section 4.4 in the graphics bundle documentation
 (\url{http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf})
 
+
 A number of width problems arise when \LaTeX{} cannot properly hyphenate a
 line. Please give LaTeX hyphenation hints using the \verb+\-+ command when
 necessary.
 
 
-\section*{Broader Impact}
-
-Authors are required to include a statement of the broader impact of their work, including its ethical aspects and future societal consequences. 
-Authors should discuss both positive and negative outcomes, if any. For instance, authors should discuss a) 
-who may benefit from this research, b) who may be put at disadvantage from this research, c) what are the consequences of failure of the system, and d) whether the task/method leverages
-biases in the data. If authors believe this is not applicable to them, authors can simply state this.
-
-Use unnumbered first level headings for this section, which should go at the end of the paper. {\bf Note that this section does not count towards the eight pages of content that are allowed.}
-
 \begin{ack}
 Use unnumbered first level headings for the acknowledgments. All acknowledgments
-go at the end of the paper before the list of references. Moreover, you are required to declare 
-funding (financial activities supporting the submitted work) and competing interests (related financial activities outside the submitted work). 
-More information about this disclosure can be found at: \url{https://neurips.cc/Conferences/2020/PaperInformation/FundingDisclosure}.
+go at the end of the paper before the list of references. Moreover, you are required to declare
+funding (financial activities supporting the submitted work) and competing interests (related financial activities outside the submitted work).
+More information about this disclosure can be found at: \url{https://neurips.cc/Conferences/2023/PaperInformation/FundingDisclosure}.
 
 
 Do {\bf not} include this section in the anonymized submission, only in the final paper. You can use the \texttt{ack} environment provided in the style file to autmoatically hide this section in the anonymized submission.
 \end{ack}
 
+
+
+\section{Supplementary Material}
+
+Authors may wish to optionally include extra information (complete proofs, additional experiments and plots) in the appendix. All such materials should be part of the supplemental material (submitted separately) and should NOT be included in the main submission.
+
+
 \section*{References}
 
-References follow the acknowledgments. Use unnumbered first-level heading for
+
+References follow the acknowledgments in the camera-ready paper. Use unnumbered first-level heading for
 the references. Any choice of citation style is acceptable as long as you are
 consistent. It is permissible to reduce the font size to \verb+small+ (9 point)
 when listing the references.
-{\bf Note that the Reference section does not count towards the eight pages of content that are allowed.}
+Note that the Reference section does not count towards the page limit.
 \medskip
 
+
+{
 \small
+
 
 [1] Alexander, J.A.\ \& Mozer, M.C.\ (1995) Template-based algorithms for
 connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and T.K.\ Leen
 (eds.), {\it Advances in Neural Information Processing Systems 7},
 pp.\ 609--616. Cambridge, MA: MIT Press.
 
+
 [2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
   Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
 TELOS/Springer--Verlag.
 
+
 [3] Hasselmo, M.E., Schnell, E.\ \& Barkai, E.\ (1995) Dynamics of learning and
 recall at excitatory recurrent synapses and cholinergic modulation in rat
 hippocampal region CA3. {\it Journal of Neuroscience} {\bf 15}(7):5249-5262.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \end{document}
