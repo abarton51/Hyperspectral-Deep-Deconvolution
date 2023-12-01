@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-model_path = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ClassicUnet'
+model_path = 'I:\Georgia Institute of Technology\Deep Learning Project Group - General\saved_models\ReducedUNet'
 
 train_path = model_path + '\\trainloss.txt'
 val_path = model_path + '\\valloss.txt'
