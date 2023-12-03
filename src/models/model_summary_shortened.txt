@@ -9,13 +9,9 @@
           BottleNeck  	        [N, 1024, 8, 8]        14161920
 
       DecoderBlock-1  	       [N, 512, 16, 16]         9178624
-
       DecoderBlock-2  	       [N, 256, 32, 32]         2295552
-
       DecoderBlock-3  	       [N, 128, 64, 64]          574336
-
       DecoderBlock-4  	       [N, 29, 128, 128]          37758
-
 ================================================================
 Total params: 30,866,114
 Trainable params: 30,866,114
