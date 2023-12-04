@@ -56,14 +56,17 @@ selection = randperm(6304,100);
 %2743
 %85
 %21
-for i = [21,85,2499,2743]
+for i = [25,88,57,4424]
     GT = h5read(datafile,'/groundtruth',[1,1,1,i],[128,128,29,1]);
-    GTcrop = GT(17:128-16,17:128-16,:);
+    GTcrop = fliplr(rot90(GT,3));
+    %GTcrop = GT(17:128-16,17:128-16,:);
     %GTcrop = (GTcrop-min(GTcrop,[],'all'))./(max(GTcrop,[],'all')-min(GTcrop,[],'all'));
     tic
     blurred = mono(:,:,i);
     recon = RLcore(OTF,IOTF,blurred,[padimdim,size(PSF,3)],RLiters);
-    reconcrop = gather(recon(17:128-16,17:128-16,:));
+    reconcrop = fliplr(rot90(gather(recon),3));
+
+    %reconcrop = gather(recon(17:128-16,17:128-16,:));
     blurredcompare = gather(blurred(17:128-16,17:128-16));
     reconcrop = (reconcrop-min(reconcrop,[],'all'))./(max(reconcrop,[],'all')-min(reconcrop,[],'all'));
     %yes the indices are hardcoded for now...
@@ -80,8 +83,9 @@ for i = [21,85,2499,2743]
         Rr = reconcrop(:,:,29); 
 
         figure('Position',[0,0,2000,400])
-        subplot(2,8,1)
+        ax = subplot(2,8,1);
         imagesc(mean(GTcrop,3));
+        colormap(ax,'gray')
         axis square
         axis off
 
@@ -110,30 +114,31 @@ for i = [21,85,2499,2743]
 
         subplot(2,8,6)
         tmp = GTcrop(24,:,:);
-        tmp = reshape(tmp,[96,29]);
-        surf([420:10:700],[1:96],tmp,'EdgeAlpha',0);
+        tmp = reshape(tmp,[128,29]);
+        surf([420:10:700],[1:128],tmp,'EdgeAlpha',0);
         xlabel('\lambda')
         ylabel('px')
         zlabel('Intensity')
 
         subplot(2,8,7)
         tmp = GTcrop(48,:,:);
-        tmp = reshape(tmp,[96,29]);
-        surf([420:10:700],[1:96],tmp,'EdgeAlpha',0);
+        tmp = reshape(tmp,[128,29]);
+        surf([420:10:700],[1:128],tmp,'EdgeAlpha',0);
         xlabel('\lambda')
         ylabel('px')
         zlabel('Intensity')
 
         subplot(2,8,8)
         tmp = GTcrop(72,:,:);
-        tmp = reshape(tmp,[96,29]);
-        surf([420:10:700],[1:96],tmp,'EdgeAlpha',0);
+        tmp = reshape(tmp,[128,29]);
+        surf([420:10:700],[1:128],tmp,'EdgeAlpha',0);
         xlabel('\lambda')
         ylabel('px')
         zlabel('Intensity')
 
-        subplot(2,8,9)
+        ax = subplot(2,8,9);
         imagesc(blurredcompare);
+        colormap(ax,'gray')
         axis square
         axis off
 
@@ -162,24 +167,24 @@ for i = [21,85,2499,2743]
 
         subplot(2,8,14)
         tmp = reconcrop(24,:,:);
-        tmp = reshape(tmp,[96,29]);
-        surf([420:10:700],[1:96],tmp,'EdgeAlpha',0);
+        tmp = reshape(tmp,[128,29]);
+        surf([420:10:700],[1:128],tmp,'EdgeAlpha',0);
         xlabel('\lambda')
         ylabel('px')
         zlabel('Intensity')
 
         subplot(2,8,15)
         tmp = reconcrop(48,:,:);
-        tmp = reshape(tmp,[96,29]);
-        surf([420:10:700],[1:96],tmp,'EdgeAlpha',0);
+        tmp = reshape(tmp,[128,29]);
+        surf([420:10:700],[1:128],tmp,'EdgeAlpha',0);
         xlabel('\lambda')
         ylabel('px')
         zlabel('Intensity')
 
         subplot(2,8,16)
         tmp = reconcrop(72,:,:);
-        tmp = reshape(tmp,[96,29]);
-        surf([420:10:700],[1:96],tmp,'EdgeAlpha',0);
+        tmp = reshape(tmp,[128,29]);
+        surf([420:10:700],[1:128],tmp,'EdgeAlpha',0);
         xlabel('\lambda')
         ylabel('px')
         zlabel('Intensity')
@@ -188,6 +193,8 @@ for i = [21,85,2499,2743]
 
     end
 
+    %loss(j) = ssim(reconcrop,GTcrop);
+    
     loss(j) = mean((GTcrop - reconcrop).^2,'all');
     j = j+1;
 

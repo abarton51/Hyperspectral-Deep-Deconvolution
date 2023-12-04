@@ -62,7 +62,7 @@ class Trainer:
                 pred = self.model(inputs)
                 loss = self.criterion(pred, gt)
                 loss.backward()
-                nn.utils.clip_grad_norm_(self.model.parameters(),max_norm = 1)
+                #nn.utils.clip_grad_norm_(self.model.parameters(),max_norm = 1)
                 grad_flow_ave,grad_flow_max = accumulate_grad_flow(self.model.named_parameters(),grad_flow_ave,grad_flow_max)
                 #step gradients
                 self.optimizer.step()

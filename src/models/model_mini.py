@@ -43,36 +43,7 @@ class DecoderBlock(nn.Module):
         x = self.conv(x)
         return x
 
-class ClassicUnet(nn.Module):
-    def __init__(self):
-        super().__init__()
-        # Encoder
-        self.e1 = EncoderBlock(1, 29)
-        self.e2 = EncoderBlock(29, 128)
-        self.e3 = EncoderBlock(128, 256)
 
-        # Bottleneck
-        self.b = ConvBlock(256, 512)
-
-        # Decoder 
-        self.d2 = DecoderBlock(512, 256)
-        self.d3 = DecoderBlock(256, 128)
-        self.d4 = DecoderBlock(128, 29)
-
-    def forward(self, inputs):
-        s1, x = self.e1(inputs)
-        s2, x = self.e2(x)
-        s3, x = self.e3(x)
-        s4, x = self.e4(x)
-
-        x = self.b(x)
-
-        x = self.d1(x, s4)
-        x = self.d2(x, s3)
-        x = self.d3(x, s2)
-        x = self.d4(x, s1)
-
-        return x
 
 
 #to test some issues with infinite recursion and device compatibility
