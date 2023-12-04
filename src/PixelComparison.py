@@ -128,9 +128,9 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None, seed=None):
             ax.set_title(pic_names[j] + '; Pixel Value Comparison across Wavelength')
             ax.legend()
             if seed!=None:
-                fig.savefig(save_path + '\\' + str(seed) + '_seed_' + pic_names[j] + '_pixel_plot')
+                fig.savefig(save_path + '\\' + str(seed) + '_seed_' + pic_names[j] + '_pixel_plot1')
             else:
-                fig.savefig(save_path + '\\' + pic_names[j] + '_pixel_plot')
+                fig.savefig(save_path + '\\' + pic_names[j] + '_pixel_plot2')
 
             ax1.imshow(prgb_gt_j)
             ax1.plot(ri[0], ri[1], marker='v', color=c_marker, markersize=10, label=rand_pixel_str)
@@ -146,15 +146,15 @@ def pixel_compare(gt, pred, save_path, coords=None, pic_names=None, seed=None):
         ax1.set_title('Ground Truth')
         ax2.set_title('Predicted')
         if seed!=None:
-            fig1.savefig(save_path + '\\' + str(seed) + '_seed_' + pic_names[j] + '_gt_markedpixels')
-            fig2.savefig(save_path + '\\' + str(seed) + '_seed_'  + pic_names[j] + '_pred_markedpixels')
+            fig1.savefig(save_path + '\\' + str(seed) + '_seed_' + pic_names[j] + '_gt_markedpixels1')
+            fig2.savefig(save_path + '\\' + str(seed) + '_seed_'  + pic_names[j] + '_pred_markedpixels1')
         else:
-            fig1.savefig(save_path + '\\' + pic_names[j] + '_gt_markedpixels')
-            fig2.savefig(save_path + '\\' + pic_names[j] + '_pred_markedpixels')
+            fig1.savefig(save_path + '\\' + pic_names[j] + '_gt_markedpixels2')
+            fig2.savefig(save_path + '\\' + pic_names[j] + '_pred_markedpixels2')
 
 
 seed=None # set to None if using manually defined coordinates
-coords = [[120, 80], [40, 20], [64, 42]] # set to None if using randomly generated coordiates
+coords = [[70, 70], [36, 20], [108, 32]] # set to None if using randomly generated coordiates
 
 gt_data, inputs, preds = read_h5(filename, 4)
 pic_names = ['Beads', 'Doll', 'Flowers', 'Public_Space']
