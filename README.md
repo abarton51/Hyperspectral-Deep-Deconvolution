@@ -1,5 +1,5 @@
 # Single-shot Hyperspectral Imaging via Deep Chromatic Aberration Deconvolution
-CS 4644 Deep Learning at Georgia Tech Course Project
+CS 7643 Deep Learning at Georgia Tech Course Project
 
 ### Contributors: Corey Zheng, Austin Barton, Mohammad Taher, Abdulaziz Memesh
 
