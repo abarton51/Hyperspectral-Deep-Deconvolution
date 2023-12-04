@@ -1,5 +1,4 @@
 # Single-shot Hyperspectral Imaging via Deep Chromatic Aberration Deconvolution
-CS 7643 Deep Learning at Georgia Tech Course Project
 
 ### Contributors: Corey Zheng, Austin Barton, Mohammad Taher, Abdulaziz Memesh
 
@@ -19,3 +18,6 @@ This work addresses the challenge of chromatic aberration in snapshot hyperspect
 
 ### figs
 - Highlighted figures from model training, evaluation, and analysis of results.
+
+## Acknowledgements
+This project is done as part of CS 7643 Deep Learning at Georgia Tech. We would like to directly thank Professor Danfei Xu and all of the teaching faculty for CS 7643 Deep Learning, Fall 2023 at Georgia Tech.
