@@ -8,16 +8,27 @@ This work addresses the challenge of chromatic aberration in snapshot hyperspect
 ## Directory
 
 ### src
--  Training and evaluating models.
 -  Data synthesization.
--  Figure analysis.
--  Data loading. 
+-  Baseline method (RL Deconvolution).
+-  Data loading.
+-  Model creation (U-Nets).
+-  Training and evaluation.
+-  Figure generation.
+-  Pixel comparison.
 
 ### overleaf
-- Paper creation.
+- Manuscript TeX files.
 
 ### figs
-- Highlighted figures from model training, evaluation, and analysis of results.
+- Highlighted figures including:
+  - Data synthesis.
+  - Point spread functions.
+  - Optical system.
+  - Data flowchart.
+  - Best results.
+  - Mode collapse results.
+  - Loss curves.
+  - Model architecture.
 
 ## Acknowledgements
 This project is done as part of CS 7643 Deep Learning at Georgia Tech. We would like to directly thank Professor Danfei Xu and all of the teaching faculty for CS 7643 Deep Learning, Fall 2023 at Georgia Tech.
