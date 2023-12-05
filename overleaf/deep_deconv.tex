@@ -25,7 +25,7 @@
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
-\usepackage{hyperref}       % hyperlinks
+\usepackage[hidelinks]{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
 \usepackage{amsfonts}       % blackboard math symbols
@@ -35,21 +35,17 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{amsmath}
+\usepackage{notoccite}
+\usepackage{caption}
+\usepackage{subcaption}
 
-% Title ideas: 
-% A Blind Approach to Hyperspectral Deep Deconvolution
-% Deep Learning for Hyperspectral Blind Deconvolution
-% Deep Learning for Hyperspectral Deconvolution
-% Hyperspectral Blind Deep Deconvolution
-% Blind Deep Deconvolution for Snapshot Hyperspectral Images
-% Deep Blind Deconvolution for Snapshot Hyperspectral Images
 \title{Single-shot Hyperspectral Imaging via Deep Chromatic Aberration Deconvolution}
 
 \author{%
    Corey Zheng \\
    College of Biomedical Engineering, Georgia Tech  \\
   % Address \\
-   \text{czheng@gatech.edu} \\
+   \text{czheng45@gatech.edu} \\
    \AND
    Austin Barton \\
    Georgia Tech \\
@@ -94,13 +90,13 @@ Chromatic Aberration Deconvolution. We explore using deep U-net networks to perf
 In this section we review approaches towards snapshot hyperspectral imaging.
 
 \subsection{CTIS}
-Snapshot hyperspectral imaging began with the introduction of Computed Tomography Imaging Spectrometers (CTIS) \cite{FORD2001986}. In this approach, an additional dispersive element is introduced into the imaging system, essentially splitting an incoming image into multiple tiled copies, with each copy exhibiting a different amount of radial chromatic blur. This follows the same concept as lightfield imaging \cite{guo2019fourier}\cite{broxton2013wave} but utilizes diffraction orders produced from chromaticity rather than depth. In a sense, such an approach could also be considered a class of \textit{chromatic aberration} approaches. However, it is differentiated from other chromatic aberration approaches by key disadvantages: (1) The authors utilize an iterative reconstruction algorithm (MART) in order to recover the final image, but this algorithm is time consuming and requires measurement of multiple calibration matrices. (2) The usage of a dispersive element to create multiple tiled copies (e.g. 7×7) results in a reduction in the field of view of the image due to the subdivision of the camera sensor area.
+Snapshot hyperspectral imaging began with the introduction of Computed Tomography Imaging Spectrometers (CTIS) \cite{FORD2001986}. In this approach, an additional dispersive element is introduced into the imaging system, essentially splitting an incoming image into multiple tiled copies, with each copy exhibiting a different amount of radial chromatic blur. This follows the same concept as lightfield imaging \cite{guo2019fourier,broxton2013wave} but utilizes diffraction orders produced from chromaticity rather than depth. In a sense, such an approach could also be considered a class of \textit{chromatic aberration} approaches. However, it is differentiated from other chromatic aberration approaches by key disadvantages: (1) The authors utilize an iterative reconstruction algorithm (MART) in order to recover the final image, but this algorithm is time consuming and requires measurement of multiple calibration matrices. (2) The usage of a dispersive element to create multiple tiled copies (e.g. 7×7) results in a reduction in the field of view of the image due to the subdivision of the camera sensor area.
 
 \subsection{Bioinspired Chromatic Vision Blur}
 Unlike mammalian eyes which have separate neuroreceptors with sensitivities tailored towards different wavelengths (primarily red, blue, green), cephalopod eyes have broadband neuroreceptors sensitive to all wavelengths. Yet, these animals can still discriminate colors through recognition of the form of the chromatic blur they produce. Inspired by this, Zhan et al. utilized a chromatic aberration system coupled with an SVD-based iterative reconstruction algorithm to restore hyperspectral stacks from monochromatic blurred images \cite{zhan2019hyperspectral}. However, the authors had to utilize 3 images of the same object at different distances in order to achieve their results, meaning a compromise between imaging speed, FOV, or resolution is necessary to apply this approach in the field, as three separate images must be acquired for a single reduction. Furthermore, the data the authors demonstrated their results on was extremely well-behaved - the authors only showed reconstruction on images that contained single-peak gaussian-esq spectra, rather than more realistic scenarios, indicating that there may have been potential trouble with separability in their approach via classical iterative deconvolution.
 
 \subsection{Diffracted Rotation and End-to-End Optimization}
-Utilizing dispersion engineering, it is possible to create custom optical elements with controllable chromatic blurring patterns. Jeon et al. \cite{jeon2019compact} formulated an approach, designing a custom diffractive optical element (DOE) that creates a triple-helix point-spread function which rotates based on the wavelength. Thus, the authors were able to increase the separability of the chromatically-aberrated images by eliminating the radial symmetry of their blur kernels. They combined this with a learned unrolled network architecture based on U-net, combined with an iterative algorithm to reconstruct hyperspectral stacks. The author also later followed on this work with a joint hyperspectral-and-depth reconstruction from a single monochromatic image using end-to-end optical optimization \cite{baek2021single}. In this approach, end-to-end optimization was performed by implemented a differentiable optics simulation prior to a deep learning U-net and optimizing both systems jointly \cite{chakrabarti2016learning}\cite{zou2023advanced}, resulting in a co-optimized PSF encoding of spectral and depth information that could be best reconstructed by the deep U-net. Both of these works showed promising results, however, in both cases, a complex DOE was fabricated via lithographic means \cite{poleshchuk2010fabrication}, which restricts accessibility.
+Utilizing dispersion engineering, it is possible to create custom optical elements with controllable chromatic blurring patterns. Jeon et al. \cite{jeon2019compact} formulated an approach, designing a custom diffractive optical element (DOE) that creates a triple-helix point-spread function which rotates based on the wavelength. Thus, the authors were able to increase the separability of the chromatically-aberrated images by eliminating the radial symmetry of their blur kernels. They combined this with a learned unrolled network architecture based on U-net, combined with an iterative algorithm to reconstruct hyperspectral stacks. The author also later followed on this work with a joint hyperspectral-and-depth reconstruction from a single monochromatic image using end-to-end optical optimization \cite{baek2021single}. In this approach, end-to-end optimization was performed by implementing a differentiable optics simulation prior to a deep learning U-net and optimizing both systems jointly \cite{chakrabarti2016learning,zou2023advanced}, resulting in a co-optimized PSF encoding of spectral and depth information that could be best reconstructed by the deep U-net. Both of these works showed promising results, however, in both cases, a complex DOE was fabricated via lithographic means \cite{poleshchuk2010fabrication}, which restricts accessibility.
 
 \section{Methods}
 
@@ -108,7 +104,7 @@ Utilizing dispersion engineering, it is possible to create custom optical elemen
 
 As a basis for the optical physics of the system, our image formation model utilizes the following assumptions:
 \begin{enumerate}
-    \item The PSF is \textit{spatially invariant}.
+    \item The point spread function (PSF) is \textit{spatially invariant}.
     \item The camera operates in the \textit{hyperfocal range} where all objects are in-focus \cite{kingslake1992optics}:
     \begin{equation}
         PSF(\lambda,z) = PSF(\lambda) 
@@ -128,7 +124,7 @@ Where $I(\lambda)$ is the captured image at some wavelength and $g(\lambda)$ is 
     I = \int_\lambda g(\lambda) \ast PSF(\lambda)
 \end{equation}
 
-This set of assumptions are are often employed in optical imaging to simplify the computational process, being similarly applied in a related work \cite{jeon2019compact}. Our optical system is shown in Figure \ref{fig:opticalsystem}, along with every band of the chromatic PSF. Additional information about the parameters of the optical system are presented in Appendix \ref{sec:appendixOptical}.
+This set of assumptions is often employed in optical imaging to simplify the computational process and has been similarly applied in a related work \cite{jeon2019compact}. We simulated an optical imaging system with chromatic aberration and generated a chromatic PSF for this range shown in Figure \ref{fig:opticalsystem}. Additional information about the parameters of the optical system are presented in Appendix \ref{sec:appendixOptical}.
 
 \begin{figure}
     \centering
@@ -138,10 +134,10 @@ This set of assumptions are are often employed in optical imaging to simplify th
 \end{figure}
 
 \subsection{Dataset}
-We are utilizing a combination of 5 hyperspectral datasets \cite{CAVE_0293}\cite{chakrabarti2011statistics}\cite{arad_and_ben_shahar_2016_ECCV}\cite{DeepCASSI:SIGA:2017}\cite{farrell2003simulation}, which results in a total of 394 unique hyperspectral images covering objects including human faces, architecture, household objects, landscapes, and more.
+We are utilizing a combination of 5 hyperspectral datasets \cite{CAVE_0293,chakrabarti2011statistics,arad_and_ben_shahar_2016_ECCV,DeepCASSI:SIGA:2017,farrell2003simulation}, which results in a total of 394 unique hyperspectral images covering objects including human faces, architecture, household objects, landscapes, and more. In general, they're all images of objects or scenes that can be captured in daily life. Some of them are nicely taken pictures, some of them are not. Each datapoint (hyperspectral image) is a 3D tensor of size $channels \times width \times height$, where each channel represents a band (small range) of the spectrum.
 
 \subsection{Data Preprocessing}
-The model flowchart is depicted in Figure \ref{fig:mainflow}. For model training, we synthesize the input monochromatic image by simulating the sensor image of the chromatically aberrated imaging system described above. All data from the 5 hyperspectral datasets were cropped to a common spectral range of 420-700nm, with steps of 10nm bands. Images were resized to a height of 512 pixels, maintaining the same aspect ratio, in order to compensate for variation in image resolutions and maintain feature density to minimize the changes of sampling low-feature empty patches. To synthesize blurred images simulating a chromatically-aberrated optical imaging system, each spectral band was convolved with the corresponding PSF and summed as described in the image formation model, resulting in a monochromatic blurred image representing the image captured by our chromatic aberration imaging system. Finally, we randomly sampled 16 128×128 pixel patches from each monochromatic image and extracted the corresponding 29×128×128 pixel hyperspectral volume to form input and ground truth pairs, respectively. The resultant dataset consists of 6304 patches, with no augmentations (additional discussion provided in Section \ref{sec:resourcelimitations}).
+The model flowchart is depicted in Figure \ref{fig:mainflow}. For model training, we synthesize the input monochromatic image by simulating the sensor image of the chromatically aberrated imaging system described above. All data from the 5 hyperspectral datasets were cropped to a common spectral range of 420-710nm, with steps of 10nm bands. Images were resized to a height of 512 pixels, maintaining the same aspect ratio, in order to compensate for variation in image resolutions and maintain feature density to minimize the changes of sampling low-feature empty patches. To synthesize blurred images simulating a chromatically-aberrated optical imaging system, each spectral band was convolved with the corresponding PSF and summed as described in the image formation model, resulting in a monochromatic blurred image representing the image captured by our chromatic aberration imaging system. Finally, we randomly (with uniform probability) sampled 16 128×128 pixel patches from each monochromatic image and extracted the corresponding 29×128×128 pixel hyperspectral volume to form input and ground truth pairs, respectively. The resultant dataset consists of 6304 patches, with no augmentations (additional discussion provided in Section \ref{sec:resourcelimitations}).
 
 \begin{figure}
     \centering
@@ -154,15 +150,35 @@ The model flowchart is depicted in Figure \ref{fig:mainflow}. For model training
 \subsection{U-Net Architecture}
 To solve this task, we're using the U-Net, a deep convolutional neural network model developed for biomedical image segmentation by Ronneberger et al. \cite{Ronneberger_2018}. A U-Net model essentially acts as an Encoder-Decoder Convolutional Neural Network. There's the encoding path that shrinks the image and increases the number of channels to bottleneck the input, then the decoding path which expands the image and decreases the number of channels. It's similar to an autoencoder, but with skip connections from the encoded representations concatenated to the decoded outputs at each upsampling step.
 
-One of the defining characteristics of U-Nets is localization, where every outputted pixel can be measured against a target value relative to the input. Ronneberger et al \cite{Ronneberger_2018} found that their U-Net outperformed the existing method of patchwise classification via CNNs and drastically improved the computational costs in achieving their task. Therefore, we decided to use a U-Net model due to its high performance and low complexity. 
+The model inputs a 1×128×128 pixel chromatically aberrated monochromatic image synthesized as described previously, and outputs a 29×128×128 hyperspectral volume in which each channel represents a 10nm wavelength band from 420-710nm. We implement two different architectures, depicted in Figure \ref{fig:Unet_model}. 
 
-The model inputs a 1×128×128 pixel chromatically aberrated monochromatic image synthesized as described previously, and outputs a 29×128×128 hyperspectral volume in which each channel represents a 10nm wavelength band from 420-700nm. We implement two different architectures, depicted in Figure \ref{fig:Unet_model}.
+U-Nets were originally designed for more precise medical image segmentation, as it exceeded existing models' performance \cite{ronneberger2015u}. They were created to achieve precise localization and detail preservation within image tasks. Localization maintains that every outputted pixel can be trained to match a target value that restores the hyperspectral data, and detail preservation ensures that the model doesn't lose the original image's structure. 
+
+Ronneberger et al. \cite{Ronneberger_2018} found that their U-Net outperformed the existing method of patchwise classification via CNNs and drastically improved the computational costs in achieving their task. U-Nets can also be adapted for complicated image tasks. For example, Oktay et al. \cite{oktay2018attention} created Attention U-Nets that could identify organs such as a pancreas, further solidfying the localization capabilites of U-Nets. U-Nets have also been used in CT scans, X-rays, and microscopy. \cite{siddique2021u}.
+
+Lastly, CNNs, which U-Nets are based on, have far greater computational efficiency than existing methods \cite{yang2018hyperspectral}. In addition, the bottle-necking procedure further improves efficiency by reducing image sizes while maintaining accuracy. Therefore, we decided to use U-Nets due to their high performance and low computational complexity.
+
+
 
 
 \begin{figure}
   \centering
-\includegraphics[width=\textwidth]{figs/model/model_summary_shortened.png}
-  \caption{Model Summary}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/model/model_summary_shortened.png}
+        \caption{}
+        \label{fig:Unet_Classic_model}
+    \end{subfigure}
+    \hfill      
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/model/model_mini_summary_shortened.PNG}
+        \caption{}
+        \label{fig:Unet_reduced_model}
+    \end{subfigure}
+    \hfill      
+
+  \caption{Model architecture summary. (a) HyperUnet, HyperUnet\textsubscript{LR}, HyperUnet\textsubscript{SSIM}. (b) HyperUnet\textsubscript{Reduced}}
   \label{fig:Unet_model}
 \end{figure}
 
@@ -173,17 +189,17 @@ We want to minimize the difference of the spectral information between the outpu
 An underlying issue that MSE has in the context of image restoration is the fact that many perceptually different restored images can correspond to one MSE value. Because our problem is taking hyperspectral images that are corrupted by chromatic aberration and restoring them to their corresponding latent sharp images, it is possible that deblurred images outputted by our model may have low MSE but perceptually poor quality. Because of this, we experiment with a combination of MSE and SSIM as an objective function. Details of the mathematical formulation and conceptual explanations are found in \ref{subsec:appendix_ssim} and \cite{Brunet_Vrscay_Wang_2011}. Note SSIM indicates high structural similarity for higher values. Hence, we formulate our SSIM loss function as $1 - $SSIM.
 
 \subsection{Baseline Comparison - Richardson-Lucy Deconvolution}
-Richardson-Lucy (RL) deconvolution is a classical iterative procedure for recovering an unblurred image from a blurred image with a known PSF imaging system \cite{lucy1974iterative}\cite{richardson1972bayesian}. It can be considered a baseline approach for any sort of image deblurring. In the case that RL deconvolution is used to project a two-dimensional image back into a 3-dimensional underlying image by means of a 3D PSF (ie, depth varying PSF), RL deconvolution follows the form \cite{broxton2013wave}\cite{guo2019fourier}:
+Richardson-Lucy (RL) deconvolution is a classical iterative procedure for recovering an unblurred image from a blurred image with a known PSF imaging system \cite{lucy1974iterative,richardson1972bayesian}. It can be considered a baseline approach for any sort of image deblurring. In the case that RL deconvolution is used to project a two-dimensional image back into a 3-dimensional underlying image by means of a 3D PSF (ie, depth varying PSF), RL deconvolution follows the form \cite{broxton2013wave,guo2019fourier}:
 
 \begin{equation}
     g(z)^{k+1} = g(z)^{k} \cdot \left(\frac{O}{\sum_{z} \text{PSF}(z) \ast g(z)^{k} } \ast \text{PSF'}(z)\right)\text{for all z}
     \label{eq:RL}
 \end{equation}
 
-Where the $g^k$ is the underlying 3D volume and each slice of $g$ can be computed according to the RL update rule above. Here, the forward projection has been modified, projecting a 3D volume $g$ into the 2D image space via superposition of the convolution of each slice with its corresponding slice of the 3D PSF. In the case of hyperspectral images, the $z$ dimension can simply be replaced with the wavelength dimension $\lambda$. We consider RL deconvolution using 15 iterations as a baseline approach towards solving hyperspectral deconvolution and compare the results of our deep network against it. Additional details of implementation and optimization of RL deconvolution hyperparameters is discussed in the Appendix \ref{sec:appendixRL}.
+Where the $g^k$ is the underlying 3D volume and each slice of $g$ can be computed according to the RL update rule above. Here, the forward projection has been modified, projecting a 3D volume $g$ into the 2D image space via superposition of the convolution of each slice with its corresponding slice of the 3D PSF. In the case of hyperspectral images, the $z$ dimension can simply be replaced with the wavelength dimension $\lambda$. We consider RL deconvolution using 15 iterations as a baseline approach towards solving hyperspectral deconvolution and compare the results of our deep network against it. Additional details of implementation and optimization of RL deconvolution hyperparameters is discussed in the Appendix \ref{appendix:RL}.
 
 \subsection{Experimental Setup}
-We implemented the U-Net architectures in Python using the PyTorch deep learning platform. Models were trained for 1000 epochs, and the epoch which resulted in the lowest validation set loss was considered to be the best model and saved for final analysis. Training required approximately 8-9 hours on a workstation with a NVIDIA Quadro A4000 with 16GB VRAM and an Intel(R) Xeon(R) W-2145 CPU @ 3.70GHz with 512GB RAM. We conducted experiments involving varied model hyperparameters and architectures, as shown in Table \ref{hyperparams}. In-depth architectures are presented in Table \ref{fig:Unet_model}.
+We implemented the U-Net architectures in Python using the PyTorch deep learning platform. Models were trained for 1000 epochs, and the epoch which resulted in the lowest validation set loss was considered to be the best model and saved for final analysis. Training required approximately 8-9 hours on a workstation with a NVIDIA Quadro A4000 with 16GB VRAM and an Intel(R) Xeon(R) W-2145 CPU @ 3.70GHz with 512GB RAM. We conducted experiments involving varied model hyperparameters and architectures, as shown in Table \ref{hyperparams}. In-depth architectures are presented in Figure \ref{fig:Unet_model}.
 
 \begin{table}
   \caption{Experimental Hyperparameters}
@@ -232,25 +248,26 @@ We implemented the U-Net architectures in Python using the PyTorch deep learning
 
 The loss of each network variation is presented in Table \ref{Results}. Of our models, HyperUnet and HyperUnet\textsubscript{LR} resulted in the best performance according to different metrics (PSNR, SSIM), respectively. Compared to other state-of-the art snapshot hyperspectral imaging methods, the absolute error (PSNR) was worse, but interestingly, our two top models had a lower SSIM loss compared to these approaches. This may indicate that custom dispersive elements utilized in previous approaches to create complex PSFs results in additional image aberrations that, though minimize the MSE, also result in a loss of the overall structure of the reconstructed volumes. In all cases, our deep models outperformed Richardson-Lucy deconvolution (Appendix \ref{appendix:RL}, Supplementary Figure \ref{fig:RLCompare}), which demonstrated an inability to perform spectral discrimination with the loss of multiple color channels.
 
-Further analysis of test set sample reconstructions from both HyperUnet and HyperUnet\textsubscript{LR} revealed that, although HyperUnet\textsubscript{LR} has similar MSE and PSNR results to HyperUnet, HyperUnet\textsubscript{LR} failed to accurately recover crucial spectral information (\ref{fig:hyperunet_lr_beads}) in comparison to HyperUnet (\ref{fig:HyperUnet_results}). While HyperUnet\textsubscript{LR} obtained predictions that minimized SSIM\textsubscript{Loss} more by a considerable margin, the qualitative difference in deblurring is almost negligible and the spectral recovery was significantly worse than HyperUnet. Thus, HyperUnet was selected as the best network of the different experiments.
+Further analysis of test set sample reconstructions from both HyperUnet and HyperUnet\textsubscript{LR} revealed that, although HyperUnet\textsubscript{LR} has similar MSE and PSNR results to HyperUnet, HyperUnet\textsubscript{LR} failed to accurately recover crucial spectral information (Figure \ref{fig:hyperunet_lr_beads}) in comparison to HyperUnet (Figure \ref{fig:HyperUnet_results}). While HyperUnet\textsubscript{LR} obtained predictions that minimized SSIM\textsubscript{Loss} more by a considerable margin, the qualitative difference in deblurring is almost negligible and the spectral recovery was significantly worse than HyperUnet. Thus, HyperUnet was selected as the best network of the different experiments.
 
-Spectral profiles are shown in Figure \ref{fig:HyperUnet_results}. Extracted spectra from spatial points in the image showed remarkable agreement between the predicted and ground truth spectrum, not just for mono-peak spectra as (Beads, pixel 3), but also for varied spectra with multiple local minima (Outdoors, pixel 3). Furthermore, our model shows a clear spatial deblurring effect as evidenced Figure ?.
+Spectral profiles are shown in Figure \ref{fig:HyperUnet_results}. Extracted spectra from spatial points in the image showed remarkable agreement between the predicted and ground truth spectrum, not just for mono-peak spectra as (Beads, pixel 3), but also for varied spectra with multiple local minima (Outdoors, pixel 3). Furthermore, sample outputs from a selection of channels are shown for the same four scenes from our test dataset in Figure \ref{fig:HyperUnet_results_grid}. A clear spatial deblurring effect can be observed comparing each wavelength band to its PSF-convolved blurred counterpart. Although loss of the highest-frequency details occurs in the reconstructed channels (flowers, Figure \ref{fig:HyperUnet_results_grid}), we can observe a remarkable similarity between each channel and its ground truth counterpart, far beyond that recovered via the RL-deconvolution baseline (Appendix Figure \ref{fig:RLCompare}). Overall, the hyperspectral volumes, which were reconstructed from a single-channel blurred image possess a clear visual resemblance to the ground truth, boasting SSIM scores beyond currently existing models.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figs/ClassicUnet/hyperunet_results_grid.png}
+    \caption{Comparison of Pseudo-RGB image outputs between ground truth sharp images, blurred images, and \text{HyperUnet} outputs. For each sample: top row: Ground truth, middle row: PSF convolved ground truth (blurred), bottom row: Deep model output. First column: monochromatic image averaged across all spectral bands, or model input, second column: Psuedo red channel (710nm), third column: psuedo green channel (560nm), fourth column: psuedo blue channel (420nm), fifth column: psuedo-RGB image formed from previous three channels. }
+    \label{fig:HyperUnet_results_grid}
+\end{figure}
 
 \subsection{Limitations}
 \subsubsection{Training Instability and PSF Degeneracy}
-Instability of the network was a major factor towards model failure modes. With only variation of the hyperparameters, we found that the non-reduced HyperUnet would fail, typically by losing several wavelength bands (Appendix \ref{fig:degeneration_mode}). Typical failure modes manifested in gradient explosion during training (Appendix \ref{fig:UnetLR_grads}, \ref{fig:UnetSSIM_grads}). However, even after implementing gradient norm clipping, we still encountered mode collapse by losing wavelength bands, indicating a particularly ill-posed separation of these channels.
-
-There exists a practical upper bound on retained information in such an image deblurring model. Observing the point-spread functions ---
-
-
-Because we are taking in a monochromatic blurred image that consists of a superposition of all bands of light within the range as well as their respective blurring kernels, the unique structure of the point spread functions can be lost in sections of the image where pixel blurring effects overlap. This would mean that the underlying relationship between the blurring effect and spectral information would be lost and hence, impossible to recover.
-
+Instability of the network was a major factor towards model failure modes. With only variation of the hyperparameters, we found that HyperUnet would fail typically by losing several wavelength bands (Appendix Figure \ref{fig:degeneration_mode}). Typical failure modes manifested in gradient explosion during training (Appendix Figure \ref{fig:loss_curve_unstable}). However, even after implementing gradient norm clipping, we still encountered mode collapse by losing wavelength bands, indicating a particularly ill-posed separation of these channels. Such instability is likely in part due to the self-similarity of the PSF. As shown in Figure \ref{fig:opticalsystem}b, the PSF is a gaussian-esque structure with sidelobes. However, there is a clear recurrence of geometry between the ranges of 420-550nm and 560-710nm, in which the PSF sizes and sidelobes are comparable in shape. In part, this is due to the design of the optical system, which was optimized to constrain the 31 band PSFs to a 31×31 pixel region, as allowing the PSF to broaden to an arbitrary size, though reducing the geometric similarities between any two bands, will also cause the required receptive field of the network to increase, rendering it unsuitable with U-net methodologies \cite{deb2022fouriernets}. However, in doing so, it appears to increase the difficulty of the inverse problenm.
 
 \subsubsection{MSE+SSIM Objective Function Issues} 
 The HyperUnet\textsubscript{SSIM} model showed highly unstable training from adding the second loss metric (SSIM) to the objective function and resulted in mode collapse. Specifically, the network effectively shrank pixel intensities of certain bands to $0$ and focused on outputting and correcting other bands (as seen in Figure \ref{fig:degeneration_mode}). Table \ref{Results} shows that this model with SSIM added into the objective function with MSE ended up resulting in a higher SSIM loss despite the model's objective function including SSIM loss.
 
 \subsubsection{Overfitting}
-Each model suffered from overfitting with the most extreme cases in the HyperUnet and HyperUnet\textsubscript{LR} (loss curves for each model are shown in the Figures \ref{fig:HyperUnet_results}, \ref{fig:loss_curve_HyperNet_model}, \ref{fig:loss_curve_HyperNetLR_model}, \ref{fig:loss_curve_UnetSSIM_model}, \ref{fig:loss_curve_ReducedUnet_model}). We experimented with reducing the architecture size, while fixing all other hyperparameters, to combat this overfitting issue and found that although it slightly reduced the overfitting, it performed much worse. We discuss this choice for experimentation and potential implications in Section \ref{sec:discussion}.
+Each model suffered from overfitting with the most extreme cases in the HyperUnet and HyperUnet\textsubscript{LR} (loss curves for each model are shown in the Figures \ref{fig:HyperUnet_results}, Appendix Figure \ref{fig:loss_curve_all}. We experimented with reducing the architecture size, while fixing all other hyperparameters, to combat this overfitting issue and found that although it slightly reduced the overfitting, it performed much worse. We discuss this choice for experimentation and potential implications in Section \ref{sec:discussion}.
 
 \begin{figure}[!h]
 \centering
@@ -289,13 +306,13 @@ All code for this project was implemented in Python and is open-source. Code rep
     \midrule
     Austin Barton & Figure analysis, figure generation, dataloader implementation, pixel comparison procedure \& implementation, SSIM implementation, custom loss function implementation, results \& analysis, manuscript \\
     \midrule
-    Mohammad Taher & \\
+    Mohammad Taher & Created the model architecture, explained usage of model, graphed \& analyzed loss curves for overfitting or lack of convergence, created several model architectures to test performance, manuscript \\
     \midrule
-    Abdulaziz Memesh & \\
+    Abdulaziz Memesh & Literature review research, proposal writing and preparation, training loop implementation, manuscript  \\
     \bottomrule
 \end{tabular}
 
-\bibliographystyle{plainnat}
+\bibliographystyle{unsrt}
 \bibliography{paper/ref}
 
 \newpage
@@ -304,7 +321,7 @@ All code for this project was implemented in Python and is open-source. Code rep
 \label{sec:appendix}
 \subsection{Optical System}
 \label{sec:appendixOptical}
-The optical system is a simple single lens design. The aperture is F/4, with a doublet lens with a 100mm focal distance at 525nm. Doublet lens is comprised of a positive asphere of N-BK7 crown glass, with a spherical concave flint component using N-F2 glass. The system was designed in Ansys Zemax OpticStudio.
+The optical system is a simple single lens design (Figure \ref{fig:opticalsystem}a). The aperture is F/4, with a doublet lens with a 100mm focal distance at 525nm. Doublet lens is comprised of a positive asphere of N-BK7 crown glass, with a spherical concave flint component using N-F2 glass. The system was designed in Ansys Zemax OpticStudio.
 
 \subsection{Structural Similaity Index Measure}
 \label{subsec:appendix_ssim}
@@ -330,18 +347,11 @@ Where $O$ is the captured blurred image, $g^{k}$ is the estimate of the unblurre
 
 In the case that RL deconvolution is used to project a two-dimensional image back into a 3-dimensional underlying image by means of a 3D PSF (ie, depth varying PSF), RL deconvolution follows a slightly modified originating from optical tomography \cite{broxton2013wave}\cite{guo2019fourier}, maintaining the structure of forward (into the blurred image space) and backwards (into the underlying space) projections, presented in Equation \ref{eq:RL}.
 
-We coded a hyperspectral RL deconvolution algorithm. As shown in Supplementary Figure \ref{fig:RL2DCompare}, our modified 3D RL deconvolution performs similarly to classical 2D RL deconvolution on a standard blurred 2D image. Because RL deconvolution does not have a set stopping criteria and may have differing iteration count needs depending on the type of images present, we applied our 3D RL deconvolution to restore 100 random samples of hyperspectral data and characterized the baseline using one of our evaluation metrics, MSE, with respect to the number of RL iterations. We determined that 15 was the best number of iterations (Figure \ref{fig:rl-b}), producing the lowest loss, and processed the entire hyperspectral dataset using RL deconvolution for 15 iterations.
+We coded a hyperspectral RL deconvolution algorithm. As shown in Supplementary Figure \ref{fig:RL2DCompare}, our modified 3D RL deconvolution performs similarly to classical 2D RL deconvolution on a standard blurred 2D image. Because RL deconvolution does not have a set stopping criteria and may have differing iteration count needs depending on the type of images present, we applied our 3D RL deconvolution to restore 100 random samples of hyperspectral data and characterized the baseline using one of our evaluation metrics, MSE, with respect to the number of RL iterations. We determined that 15 was the best number of iterations, producing the lowest loss, and processed the entire hyperspectral dataset using RL deconvolution for 15 iterations.
 
-The results are shown in Figure \ref{fig:RLCompare}. Immediately we note that the RL deconvolution was unable to properly extract the spectrum of each pixel, as all wavelengths past 550nm had no intensity contribution (Figure \ref{fig:RLCompare}, Beads RL Profile 1), resulting in the picked wavelengths for the pseudo-RGB image to have low intensities and appearing dark. This is likely due to the similarity of the PSF in this range: as shown in Figure \ref{fig:data_pipeline}, the PSF shows self-similarity across the range 420-540nm and 550-700nm range. This also results in the loss of some wavelength-specific textures, such as the background roughness in the 700nm slice of the Painting. However, the RL deconvolution is still able to perform mild deblurring from the monochrome image, as shown in the 560nm slice of the Painting as expected. As such, we note that the baseline method, RL-deconvolution, performs relatively poorly in the hyperspectral regime. This likely explains why previous approaches towards hyperspectral imaging instead relied on deep networks \cite{jeon2019compact}, and those that did utilize classical filtering approaches had highly structured spectra with only single peaks \cite{zhan2019hyperspectral}.
+The results are shown in Figure \ref{fig:RLCompare}. Immediately we note that the RL deconvolution was unable to properly extract the spectrum of each pixel, as all wavelengths past 550nm had no intensity contribution (Figure \ref{fig:RLCompare}, Beads RL Profile 1), resulting in the picked wavelengths for the pseudo-RGB image to have low intensities and appearing dark. This is likely due to the similarity of the PSF in this range: as shown in Figure \ref{fig:opticalsystem}b, the PSF shows self-similarity across the range 420-550nm and 560-710nm range. This also results in the loss of some wavelength-specific textures, such as the background roughness in the 710nm slice of the Painting. However, the RL deconvolution is still able to perform mild deblurring from the monochrome image, as shown in the 560nm slice of the Painting as expected. As such, we note that the baseline method, RL-deconvolution, performs relatively poorly in the hyperspectral regime. This likely explains why previous approaches towards hyperspectral imaging instead relied on deep networks \cite{jeon2019compact}, and those that did utilize classical filtering approaches had highly structured spectra with only single peaks \cite{zhan2019hyperspectral}.
 
 \subsection{Additional Figures}
-
-\begin{figure}[!h]
-\centering
-\includegraphics[width=\textwidth]{figs/ClassicUnet/hyperunet_results_grid.png}
-    \caption{Comparison of Pseudo-RGB image outputs between ground truth sharp images, blurred images, and \text{HyperUnet} outputs.}
-    \label{fig:HyperUnet_results_grid}
-\end{figure}
 
 
 \begin{figure}[!h]
@@ -354,7 +364,7 @@ The results are shown in Figure \ref{fig:RLCompare}. Immediately we note that th
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.9\textwidth]{figs/ClassicUnetSSIM_LR/pixel_comparison/4423_test3_ssim.png}
-    \caption{Comparison of Pseudo-RGB images between ground truth (top row), hyperspectral blurred images (middle row), and the HyperUnet\textsubscript{SSIM}} outputs.
+    \caption{Comparison of Pseudo-RGB images between ground truth (top row), hyperspectral blurred images (middle row), and the HyperUnet\textsubscript{SSIM} outputs.}
     \label{fig:degeneration_mode}
 \end{figure}
 
@@ -374,57 +384,68 @@ The results are shown in Figure \ref{fig:RLCompare}. Immediately we note that th
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=\textwidth]{figs/ReducedUnet/loss_curves/loss_curve.png}
-    \caption{Loss curve of ReducedUnet Architecture. This was done as an exploration of the overfitting issue seen in previous models and also because of the limited time and computing resources available.}
-    \label{fig:loss_curve_ReducedUnet_model}
-\end{figure}
-\begin{figure}[!htb]
-    \centering
-    \includegraphics[width=\textwidth]{figs/ClassicUnet/curves/loss_curve.png}
-    \caption{Loss curve for HyperUnet.}
-    \label{fig:loss_curve_HyperNet_model}
-\end{figure}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/ClassicUnet/curves/loss_curve.png}
+        \caption{}
+        \label{fig:loss_curve_HyperNet_model}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/ReducedUnet/loss_curves/loss_curve.png}
+        \caption{}
+        \label{fig:loss_curve_ReducedUnet_model}
+    \end{subfigure}
+    
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/ClassicUnetSSIM_LR/curves/loss_curve_zoom.png}
+        \caption{}
+        \label{fig:loss_curve_UnetSSIMzoom_model}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/ClassicUnet_LR/curves/loss_curve.png}
+        \caption{}
+        \label{fig:loss_curve_HyperNetLR_model}
+    \end{subfigure}
 
-\begin{figure}[!htb]
-    \centering
-    \includegraphics[width=\textwidth]{figs/ClassicUnet_LR/curves/loss_curve.png}
-    \caption{Loss curve for HyperUnet\textsubscript{LR}.}
-    \label{fig:loss_curve_HyperNetLR_model}
-\end{figure}
-
-\begin{figure}[!htb]
-    \centering
-    \includegraphics[width=\textwidth]{figs/ClassicUnetSSIM_LR/curves/loss_curve.png}
-    \caption{Loss curve for HyperUnet\textsubscript{SSIM}.}
-    \label{fig:loss_curve_UnetSSIM_model}
-\end{figure}
-
-\begin{figure}[!htb]
-    \centering
-    \includegraphics[width=\textwidth]{figs/ClassicUnetSSIM_LR/curves/loss_curve_zoom.png}
-    \caption{Loss curve for HyperUnet\textsubscript{SSIM}: 100-200 epochs.}
-    \label{fig:loss_curve_UnetSSIMzoom_model}
+    
+    \caption{Loss curves for various experiments. \textbf{(a)} Loss curve for HyperUnet. \textbf{(b)} Loss curve of ReducedUnet Architecture. This was done as an exploration of the overfitting issue seen in previous models and also because of the limited time and computing resources available. \textbf{(c)} Loss curve for HyperUnet\textsubscript{SSIM}. \textbf{(d)} Loss curve for HyperUnet\textsubscript{LR}.}
+    \label{fig:loss_curve_all}
+    
 \end{figure}
 
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=\textwidth]{figs/loss_curve.png}
-    \caption{Loss curve for a degenerate model that experienced extreme instability in training.}
+    \caption{Example of training instability. \textbf{(a)} loss curve which presents an extreme spike at epoch 656. \textbf{(b)} Plot of max and average gradients for each layer at epoch 655. \textbf{(c)} Plot of max and average gradients for each layer at epoch 656, showing a 100-fold increase during a sudden gradient explosion. \textbf{(d)} Flowers test sample prior to gradient explosion. \textbf{(e)} Flowers test sample after gradient explosion, presenting loss of two color channels.}
     \label{fig:loss_curve_unstable}
 \end{figure}
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=\textwidth]{figs/ClassicUnet_LR/grads/grads999.png}
-    \caption{Gradient size plots for HyperNet\textsubscript{LR}.}
-    \label{fig:UnetLR_grads}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/ClassicUnet_LR/grads/grads999.png}
+        \caption{}
+        \label{fig:UnetLR_grads}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figs/ClassicUnetSSIM_LR/grads/grads999.png}
+        \caption{}
+        \label{fig:UnetSSIM_grads}
+    \end{subfigure}
+
+    \label{fig:grads_all}
+    \caption{Gradient plot examples for gradient analysis. \textbf{(a)} Gradient size plots for HyperNet\textsubscript{LR}. \textbf{(b)} Gradient size plots for HyperNet\textsubscript{SSIM}.}
+    
 \end{figure}
 
-\begin{figure}[!htb]
-    \centering
-    \includegraphics[width=\textwidth]{figs/ClassicUnetSSIM_LR/grads/grads999.png}
-    \caption{Gradient size plots for HyperNet\textsubscript{SSIM}.}
-    \label{fig:UnetSSIM_grads}
-\end{figure}
+
 
 \end{document}
