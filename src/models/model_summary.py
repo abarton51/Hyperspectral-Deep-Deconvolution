@@ -1,4 +1,4 @@
-from model import ClassicUnet
+from model_mini import ClassicUnet
 from torchsummary import summary
 
 model = ClassicUnet()

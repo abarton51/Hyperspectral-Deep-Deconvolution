@@ -44,8 +44,6 @@ class DecoderBlock(nn.Module):
         return x
 
 
-
-
 #to test some issues with infinite recursion and device compatibility
 class DummyNet(nn.Module):
     def __init__(self):
