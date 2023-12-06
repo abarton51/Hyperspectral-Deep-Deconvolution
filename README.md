@@ -32,15 +32,17 @@ This work addresses the challenge of chromatic aberration in snapshot hyperspect
 - Manuscript TeX files.
 
 ### figs
+Folders titled `HyperUnet`
 - Highlighted figures including:
+  - System process flowchart.
   - Data synthesis.
   - Point spread functions.
-  - Optical system.
-  - Data flowchart.
+  - Simulated optical system.
   - Best results.
-  - Mode collapse results.
+  - Degenerate results.
   - Loss curves.
   - Model architecture.
+  - Metric tables.
 
 ## Acknowledgements
 This project is done as part of CS 7643 Deep Learning at Georgia Tech. We would like to directly thank Professor Danfei Xu and all of the teaching faculty for CS 7643 Deep Learning, Fall 2023 at Georgia Tech.
