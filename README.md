@@ -8,8 +8,8 @@ This work addresses the challenge of chromatic aberration in snapshot hyperspect
 ## Setup
 **Option One (Recommended)**:
 - Open Anaconda Prompt 
-- Navigate to `src`. Then, use the following command to create the environment: `conda env create -n env_name -f environment.yaml`
-- Activate the environment with: `conda activate env_name`
+- Navigate to `src`. Then, use the following command to create the environment: `conda env create -f environment.yaml`
+- Activate the environment with: `conda activate hyperspec`
 - Verify installation with: `conda list`
 
 **Option Two**:
