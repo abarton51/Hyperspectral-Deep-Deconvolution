@@ -2,8 +2,6 @@
 
 ![](https://github.com/abarton51/Hyperspectral-Deep-Deconvolution/blob/main/figs/mainflow.png?raw=true)
 
-<h3 align="center"><ins>Authors:</ins> Corey Zheng, Austin Barton,  Mohammad Taher, Abdulaziz Memesh</h3>
-
 This repository provides the official PyTorch implementation of the following paper:
 
 > Rethinking Coarse-to-Fine Approach in Single Image Deblurring
