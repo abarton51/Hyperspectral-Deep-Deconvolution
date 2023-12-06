@@ -1,9 +1,3 @@
-<style>
-  h1 {
-    text-align: center;
-  }
-</style>
-
 # Single-shot Hyperspectral Imaging via Deep Chromatic Aberration Deconvolution
 
 ### Contributors: Corey Zheng, Austin Barton, Mohammad Taher, Abdulaziz Memesh
