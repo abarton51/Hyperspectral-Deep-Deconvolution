@@ -2,9 +2,9 @@
 
 ![](https://github.com/abarton51/Hyperspectral-Deep-Deconvolution/blob/main/figs/mainflow.png?raw=true)
 
-This repository provides the official PyTorch implementation of the following paper:
+Code repository for manuscript titled:
 
-> Rethinking Coarse-to-Fine Approach in Single Image Deblurring
+> Single-shot Hyperspectral Imaging via Deep Chromatic Aberration Deconvolution
 >
 > [Corey Zheng](czheng45@gatech.edu), [Austin Barton](https://github.com/abarton51), [Mohammad Taher](mtaher3@gatech.edu), [Abdulaziz Memesh](a.memesh@gatech.edu)
 >
