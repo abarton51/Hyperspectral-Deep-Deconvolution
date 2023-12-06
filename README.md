@@ -1,6 +1,8 @@
-# Single-shot Hyperspectral Imaging via Deep Chromatic Aberration Deconvolution
+<h1 align="center">Single-shot Hyperspectral Imaging via Deep Chromatic Aberration Deconvolution</h1>
 
-### Contributors: Corey Zheng, Austin Barton, Mohammad Taher, Abdulaziz Memesh
+![](https://github.com/abarton51/Hyperspectral-Deep-Deconvolution/blob/main/figs/mainflow.png?raw=true)
+
+<h3 align="center"><ins>Authors:</ins>Corey Zheng, Austin Barton,  Mohammad Taher, Abdulaziz Memesh</h3>
 
 ## Overview
 This work addresses the challenge of chromatic aberration in snapshot hyperspectral imaging, where the introduction of a third spectral dimension complicates encoding information into a two-dimensional detector plane. Our proposed method aims to enhance the quality of hyperspectral images by mitigating distortions inherent in snapshot acquisitions by leveraging a blind deconvolution approach with a U-Net neural network architecture for single-shot hyperspectral imaging. This allows real-time correction without the need for complex scanning mechanisms. Through experimental validation, we demonstrate the efficacy of our method in preserving image structure and spectral composition information, contributing to improved imaging throughput and simplified hardware requirements. We demonstrate models capable of restoring spectral information among test data, even in pixel locations with highly varying wavelength intensities, while deblurring and restoring an approximation of the latent sharp image. This work represents a simple yet effective approach to circumventing issues in snapshot hyperspectral imaging, providing a practical solution for applications in medical imaging, agriculture, materials identification, and geological surveillance.
